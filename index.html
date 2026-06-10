@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#06070f" />
+  <title>30 Haziran 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── TOKENS ─── */
+    :root {
+      --bg:          #06070f;
+      --surface:     rgba(255,255,255,0.05);
+      --border:      rgba(255,255,255,0.09);
+      --teal:        #00dfc4;
+      --teal-dim:    rgba(0,223,196,0.15);
+      --gold:        #ffc94a;
+      --gold-dim:    rgba(255,201,74,0.12);
+      --white:       #eef2ff;
+      --soft:        rgba(238,242,255,0.55);
+      --dim:         rgba(238,242,255,0.3);
+    }
+
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;          /* tek ekran — scroll yok */
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ─── YILDIZ CANVAS ─── */
+    #stars {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
+
+    /* ─── ANA KAPSAYICI ─── */
+    .screen {
+      position: relative; z-index: 1;
+      width: 100%; height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;         /* dikey ortalama */
+      padding: clamp(1rem, 3vh, 3rem) clamp(1rem, 4vw, 6rem);
+      gap: clamp(1.2rem, 3.5vh, 3.5rem);
+    }
+
+    /* ════════════════════════════════
+       ÜST BAŞLIK
+    ════════════════════════════════ */
+    .eyebrow {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.55rem, 1.1vw, 0.85rem);
+      font-weight: 700;
+      letter-spacing: 0.45em;
+      color: var(--teal);
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    /* ════════════════════════════════
+       GERİ SAYIM PANO
+    ════════════════════════════════ */
+    .board {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: clamp(0.5rem, 2vw, 2.2rem);
+    }
+
+    .unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(0.3rem, 0.7vh, 0.7rem);
+    }
+
+    .panel {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: clamp(8px, 1.2vw, 16px);
+      padding: clamp(0.5rem, 1.5vh, 1.4rem) clamp(0.8rem, 2vw, 2.2rem);
+      min-width: clamp(72px, 13vw, 170px);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.09),
+        0 6px 28px rgba(0,0,0,0.45);
+      overflow: hidden;
+    }
+
+    /* teal üst şerit */
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--teal), transparent);
+    }
+
+    /* iç ışık */
+    .panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0,223,196,0.07), transparent 65%);
+      pointer-events: none;
+    }
+
+    .digit {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.8rem, 8.5vw, 8.5rem);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+      color: var(--white);
+      text-shadow:
+        0 0 18px rgba(0,223,196,0.55),
+        0 0 50px rgba(0,223,196,0.2);
+      display: block;
+      text-align: center;
+    }
+
+    .digit.flip { animation: flip 0.22s ease; }
+
+    .unit-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.5rem, 1vw, 0.9rem);
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      color: var(--teal);
+      text-transform: uppercase;
+      opacity: 0.75;
+    }
+
+    .sep {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.8rem, 6vw, 6.5rem);
+      font-weight: 900;
+      color: var(--teal);
+      opacity: 0.22;
+      align-self: flex-start;
+      padding-top: clamp(0.3rem, 1vh, 0.8rem);
+      line-height: 1;
+      animation: blink 1s step-end infinite;
+    }
+
+    /* ════════════════════════════════
+       AYIRICI ÇİZGİ
+    ════════════════════════════════ */
+    .divider {
+      width: min(600px, 80vw);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), var(--teal-dim), var(--border), transparent);
+    }
+
+    /* ════════════════════════════════
+       DÖNEN SÖZ KARTI
+    ════════════════════════════════ */
+    .quote-area {
+      width: min(820px, 88vw);
+      position: relative;
+    }
+
+    .quote-card {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: clamp(0.6rem, 1.5vh, 1.4rem);
+      padding: clamp(1.2rem, 3vh, 3rem) clamp(1.5rem, 4vw, 4rem);
+
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: clamp(14px, 1.8vw, 24px);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        0 8px 40px rgba(0,0,0,0.5);
+
+      /* geçiş durumları */
+      opacity: 0;
+      transform: translateY(20px) scale(0.97);
+      transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.22,1,0.36,1);
+      pointer-events: none;
+    }
+
+    /* Üst renk çizgisi — JS ile inline style olarak renk verilir */
+    .quote-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      border-radius: 24px 24px 0 0;
+      background: var(--accent-color, linear-gradient(90deg, var(--teal), var(--gold)));
+    }
+
+    .quote-card.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+      position: relative; /* aktif kart alanı belirler */
+    }
+
+    .quote-card.leaving {
+      opacity: 0;
+      transform: translateY(-14px) scale(0.97);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      position: absolute; inset: 0;
+    }
+
+    .q-mark {
+      font-size: clamp(1.8rem, 3.5vw, 3.2rem);
+      line-height: 0.6;
+      color: var(--teal);
+      opacity: 0.22;
+      font-family: Georgia, serif;
+      align-self: flex-start;
+    }
+
+    .q-text {
+      font-size: clamp(0.95rem, 1.9vw, 1.45rem);
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.75;
+      color: var(--white);
+      max-width: 68ch;
+    }
+
+    .q-author {
+      display: flex;
+      align-items: center;
+      gap: clamp(0.6rem, 1.2vw, 1rem);
+      margin-top: clamp(0.2rem, 0.6vh, 0.6rem);
+    }
+
+    .q-avatar {
+      width: clamp(34px, 4vw, 50px);
+      height: clamp(34px, 4vw, 50px);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.65rem, 1.1vw, 0.95rem);
+      font-weight: 900;
+      color: var(--bg);
+      flex-shrink: 0;
+      /* background set inline per card */
+    }
+
+    .q-name {
+      font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+      font-weight: 600;
+      color: var(--white);
+    }
+    .q-role {
+      font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+      color: var(--soft);
+      font-weight: 400;
+    }
+
+    /* ─── İLERLEME ÇUBUĞU ─── */
+    .progress-bar {
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 3px;
+      border-radius: 0 0 24px 24px;
+      background: var(--accent-color, var(--teal));
+      opacity: 0.5;
+      width: 100%;
+      transform-origin: left;
+      /* genişlik JS ile animate edilir */
+    }
+
+    /* ─── NOKTA GÖSTERGELERİ ─── */
+    .dots {
+      display: flex;
+      gap: clamp(5px, 0.8vw, 10px);
+      justify-content: center;
+    }
+
+    .dot {
+      width: clamp(5px, 0.6vw, 8px);
+      height: clamp(5px, 0.6vw, 8px);
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .dot.active {
+      background: var(--teal);
+      transform: scale(1.4);
+    }
+
+    /* ════════════════════════════════
+       KUTLAMA EKRANI
+    ════════════════════════════════ */
+    .celebration {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+      text-align: center;
+    }
+    .celebration.show { display: flex; animation: celebIn 1s cubic-bezier(0.34,1.56,0.64,1); }
+
+    .celeb-emoji {
+      font-size: clamp(5rem, 14vw, 10rem);
+      line-height: 1;
+      animation: bounce 1.6s ease-in-out infinite alternate;
+    }
+    .celeb-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2rem, 6vw, 5rem);
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 60px rgba(255,201,74,0.4);
+    }
+
+    /* ════════════════════════════════
+       ANİMASYONLAR
+    ════════════════════════════════ */
+    @keyframes flip {
+      0%   { transform: translateY(-10px) scaleY(0.8); opacity: 0.3; }
+      65%  { transform: translateY(2px) scaleY(1.02); opacity: 1; }
+      100% { transform: translateY(0) scaleY(1); }
+    }
+    @keyframes blink {
+      0%,49% { opacity: 0.22; }
+      50%,100% { opacity: 0.06; }
+    }
+    @keyframes celebIn {
+      from { opacity: 0; transform: scale(0.75) translateY(24px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes bounce {
+      from { transform: translateY(0) scale(1); }
+      to   { transform: translateY(-10px) scale(1.04); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* ─── Çok küçük ekran tweaks ─── */
+    @media (max-height: 600px) {
+      .eyebrow { display: none; }
+      .divider { display: none; }
+      .screen  { gap: 0.6rem; }
+    }
+    @media (max-width: 480px) {
+      .sep { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<div class="screen" id="screen">
+
+  <!-- Üst etiket -->
+  <p class="eyebrow" id="eyebrow">⏳ 30 Haziran 2026'ya Kalan Süre</p>
+
+  <!-- Geri sayım panosu -->
+  <div class="board" id="board" aria-live="polite">
+    <div class="unit">
+      <div class="panel"><span class="digit" id="d-days">00</span></div>
+      <span class="unit-label">Gün</span>
+    </div>
+    <span class="sep" aria-hidden="true">:</span>
+    <div class="unit">
+      <div class="panel"><span class="digit" id="d-hours">00</span></div>
+      <span class="unit-label">Saat</span>
+    </div>
+    <span class="sep" aria-hidden="true">:</span>
+    <div class="unit">
+      <div class="panel"><span class="digit" id="d-mins">00</span></div>
+      <span class="unit-label">Dakika</span>
+    </div>
+    <span class="sep" aria-hidden="true">:</span>
+    <div class="unit">
+      <div class="panel"><span class="digit" id="d-secs">00</span></div>
+      <span class="unit-label">Saniye</span>
+    </div>
+  </div>
+
+  <!-- Kutlama (süre dolunca) -->
+  <div class="celebration" id="celebration">
+    <div class="celeb-emoji">🎉</div>
+    <p class="celeb-text">Bugün büyük gün!</p>
+  </div>
+
+  <!-- İnce ayırıcı -->
+  <div class="divider"></div>
+
+  <!-- Dönen söz kartı alanı -->
+  <div class="quote-area" id="quoteArea" aria-live="polite" aria-atomic="true">
+    <!-- Kartlar JS ile enjekte edilir -->
+  </div>
+
+  <!-- Nokta göstergesi -->
+  <div class="dots" id="dots"></div>
+
+</div><!-- /screen -->
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   ✏️  SÖZLERİ BURAYA EKLE / DÜZENLE
+   Her nesne:
+     name   – kişinin adı
+     title  – ünvan / ilişki (boş bırakılabilir)
+     text   – söz / mesaj
+     color  – kartın aksan rengi (CSS string)
+═══════════════════════════════════════════════════════ */
+const QUOTES = [
+  {
+    name:  "Ayşe Kaya",
+    title: "Sevgili Arkadaş",
+    text:  "Bu güne gelene kadar ne çok emek verdin. Bugün sadece bir tarihin değil, hak ettiğin bir geleceğin başlangıcı. Gururla bakıyorum sana.",
+    color: "linear-gradient(90deg,#00dfc4,#00b4d8)"
+  },
+  {
+    name:  "Mehmet Yılmaz",
+    title: "Ağabey",
+    text:  "Yıllar yılı hayal ettiğin o kapı sonunda açılıyor. Bundan daha güzel ne olabilir ki? Sevinciniz bizim sevincimiz.",
+    color: "linear-gradient(90deg,#ffc94a,#f4a261)"
+  },
+  {
+    name:  "Zeynep Arslan",
+    title: "Okul Arkadaşı",
+    text:  "Birlikte başladığımız bu yolun sonunda seni görmek inanılmaz güzel. Tüm zorluklara rağmen vazgeçmediğin için teşekkürler.",
+    color: "linear-gradient(90deg,#c77dff,#7b2fff)"
+  },
+  {
+    name:  "Ali Demir",
+    title: "Mentor",
+    text:  "Potansiyelini ilk gün gördüm. Bugün herkes görüyor. Büyük işler yapmaya devam et, dünya seni bekliyor.",
+    color: "linear-gradient(90deg,#06d6a0,#1b9aaa)"
+  },
+  {
+    name:  "Fatma Çelik",
+    title: "Anne",
+    text:  "Seni küçücükken kucağımda tutarken bile büyük işler yapacağını biliyordum. Gözlerim yaşlı ama kalbim sevinçle dolup taşıyor.",
+    color: "linear-gradient(90deg,#ef476f,#f72585)"
+  },
+  {
+    name:  "Can Öztürk",
+    title: "İş Arkadaşı",
+    text:  "Hem çalışkan hem de ilham verici birini tanımak büyük bir şans. Bu başarı çok hak edilen bir başarı.",
+    color: "linear-gradient(90deg,#ffc94a,#ef476f)"
+  }
+];
+
+/* ══════════════ YARDIMCI ══════════════ */
+function pad(n) { return String(n).padStart(2,'0'); }
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function initials(name) { return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+
+/* ══════════════ YILDIZ ARKAPLAN ══════════════ */
+(function(){
+  const cvs = document.getElementById('stars');
+  const ctx = cvs.getContext('2d');
+  let stars = [], W, H;
+  function resize(){ W = cvs.width = innerWidth; H = cvs.height = innerHeight; }
+  function make(){ stars = Array.from({length:180}, ()=>({ x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.1+0.2, a:Math.random(), da:(Math.random()-0.5)*0.005 })); }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    stars.forEach(s=>{
+      s.a+=s.da; if(s.a<0||s.a>1) s.da*=-1;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(190,210,255,${s.a*0.65})`; ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  addEventListener('resize',()=>{ resize(); make(); });
+  resize(); make(); draw();
+})();
+
+/* ══════════════ GERİ SAYIM ══════════════ */
+const TARGET = new Date('2026-06-30T00:00:00');
+const els = { days: document.getElementById('d-days'), hours: document.getElementById('d-hours'), mins: document.getElementById('d-mins'), secs: document.getElementById('d-secs') };
+const prev = {};
+
+function tick(){
+  const diff = TARGET - new Date();
+  if(diff <= 0){
+    document.getElementById('board').style.display = 'none';
+    document.getElementById('eyebrow').style.display = 'none';
+    document.getElementById('celebration').classList.add('show');
+    return;
+  }
+  const vals = {
+    days:  pad(Math.floor(diff/86400000)),
+    hours: pad(Math.floor(diff%86400000/3600000)),
+    mins:  pad(Math.floor(diff%3600000/60000)),
+    secs:  pad(Math.floor(diff%60000/1000))
+  };
+  for(const [k,v] of Object.entries(vals)){
+    if(v !== prev[k]){
+      const el = els[k];
+      el.textContent = v;
+      el.classList.remove('flip');
+      void el.offsetWidth;
+      el.classList.add('flip');
+      prev[k] = v;
+    }
+  }
+}
+tick();
+setInterval(tick, 1000);
+
+/* ══════════════ DÖNEN SÖZLER ══════════════ */
+const INTERVAL = 30000;   /* her söz kaç ms gösterilsin */
+const area  = document.getElementById('quoteArea');
+const dotsEl = document.getElementById('dots');
+
+let current  = 0;       /* aktif kart indeksi */
+let cardEls  = [];      /* DOM elemanları */
+let startTs  = null;    /* mevcut kartın başlangıç zamanı */
+let rafId    = null;    /* progress animasyon frame */
+
+/* Noktaları oluştur */
+QUOTES.forEach((_,i)=>{
+  const d = document.createElement('span');
+  d.className = 'dot' + (i===0 ? ' active' : '');
+  dotsEl.appendChild(d);
+});
+
+/* Tüm kartları DOM'a ekle */
+QUOTES.forEach((q, i)=>{
+  const card = document.createElement('div');
+  card.className = 'quote-card';
+  card.style.setProperty('--accent-color', q.color);
+
+  const avatarBg = q.color;  /* aynı renk avatara da */
+
+  card.innerHTML = `
+    <span class="q-mark" aria-hidden="true">"</span>
+    <p class="q-text">${esc(q.text)}</p>
+    <div class="q-author">
+      <div class="q-avatar" style="background:${avatarBg}">${initials(q.name)}</div>
+      <div>
+        <div class="q-name">${esc(q.name)}</div>
+        ${q.title ? `<div class="q-role">${esc(q.title)}</div>` : ''}
+      </div>
+    </div>
+    <div class="progress-bar" id="pb-${i}" style="background:${q.color}"></div>
+  `;
+  area.appendChild(card);
+  cardEls.push(card);
+});
+
+/* İlerleme çubuğunu güncelle */
+function updateProgress(ts){
+  if(startTs === null) startTs = ts;
+  const elapsed  = ts - startTs;
+  const fraction = Math.min(elapsed / INTERVAL, 1);
+  const pb = document.getElementById(`pb-${current}`);
+  if(pb) pb.style.transform = `scaleX(${fraction})`;
+  if(fraction < 1){
+    rafId = requestAnimationFrame(updateProgress);
+  }
+}
+
+/* Kart göster */
+function showCard(idx){
+  /* eski aktif kartı 'leaving' yap */
+  const old = cardEls[current];
+  old.classList.remove('active');
+  old.classList.add('leaving');
+  setTimeout(()=>{ old.classList.remove('leaving'); }, 450);
+
+  /* nokta güncelle */
+  dotsEl.children[current].classList.remove('active');
+  dotsEl.children[idx].classList.add('active');
+
+  current = idx;
+  const card = cardEls[current];
+  card.classList.add('active');
+
+  /* progress sıfırla */
+  cancelAnimationFrame(rafId);
+  startTs = null;
+  const pb = document.getElementById(`pb-${current}`);
+  if(pb) pb.style.transform = 'scaleX(0)';
+  rafId = requestAnimationFrame(updateProgress);
+}
+
+/* İlk kartı göster */
+cardEls[0].classList.add('active');
+startTs = null;
+rafId = requestAnimationFrame(updateProgress);
+
+/* Otomatik geçiş */
+setInterval(()=>{
+  const next = (current + 1) % QUOTES.length;
+  showCard(next);
+}, INTERVAL);
+
+/* ══════════════ WAKE LOCK ══════════════ */
+(async function(){
+  if(!('wakeLock' in navigator)) return;
+  let lock;
+  async function req(){ try{ lock = await navigator.wakeLock.request('screen'); }catch(_){} }
+  req();
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') req(); });
+})();
+
+/* ══════════════ TV — OK TUŞU NAVİGASYON ══════════════ */
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight' || e.key==='ArrowDown'){
+    e.preventDefault(); showCard((current+1) % QUOTES.length);
+  } else if(e.key==='ArrowLeft' || e.key==='ArrowUp'){
+    e.preventDefault(); showCard((current-1+QUOTES.length) % QUOTES.length);
+  }
+});
+
+/* ══════════════ ÇEVRİMDIŞI DURUM ══════════════ */
+addEventListener('offline', ()=>{ document.title = '📡 Bağlantı yok — 30 Haziran 2026'; });
+addEventListener('online',  ()=>{ document.title = '30 Haziran 2026'; });
+</script>
+
+</body>
+</html>
