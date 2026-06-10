@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="İmtihana hazırlanan talebeler için motivasyon ve geri sayım uygulaması." />
+  <title>30 Haziran'a Kalan Süre</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container" role="main">
+
+    <!-- Başlık -->
+    <header class="site-header">
+      <h1 class="main-title">İMTİHANA KALAN SÜRE</h1>
+      <p class="subtitle">Bu yolda yalnız değilsin. Seni seven, sana inanan, senin için dua eden insanlar var.</p>
+    </header>
+
+    <!-- Geri Sayım -->
+    <section class="countdown-section" aria-label="Geri sayım">
+      <div class="countdown" id="countdown">
+        <div class="countdown-unit">
+          <span class="countdown-value" id="days">--</span>
+          <span class="countdown-label">Gün</span>
+        </div>
+        <div class="countdown-separator" aria-hidden="true">:</div>
+        <div class="countdown-unit">
+          <span class="countdown-value" id="hours">--</span>
+          <span class="countdown-label">Saat</span>
+        </div>
+        <div class="countdown-separator" aria-hidden="true">:</div>
+        <div class="countdown-unit">
+          <span class="countdown-value" id="minutes">--</span>
+          <span class="countdown-label">Dakika</span>
+        </div>
+        <div class="countdown-separator" aria-hidden="true">:</div>
+        <div class="countdown-unit">
+          <span class="countdown-value" id="seconds">--</span>
+          <span class="countdown-label">Saniye</span>
+        </div>
+      </div>
+
+      <!-- Kutlama mesajı (gizli) -->
+      <div class="celebration" id="celebration" hidden aria-live="polite">
+        <p class="celebration-text">Tebrikler! Bu güne ulaştın. 🎉</p>
+        <p class="celebration-sub">Emeklerin boşa gitmedi. Hayırlı olsun!</p>
+      </div>
+    </section>
+
+    <!-- İlerleme Çubuğu -->
+    <section class="progress-section" aria-label="İlerleme göstergesi">
+      <div class="progress-bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Geçen süre">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <p class="progress-label" id="progress-label">Yol alınıyor…</p>
+    </section>
+
+    <!-- Mesaj Kartı -->
+    <section class="message-section" aria-label="Motivasyon mesajı" aria-live="polite" aria-atomic="true">
+      <div class="message-card" id="message-card">
+        <div class="message-loading" id="message-loading">
+          <span>Mesajlar yükleniyor…</span>
+        </div>
+        <blockquote class="message-content" id="message-content" hidden>
+          <p class="message-text" id="message-text"></p>
+          <footer class="message-author">
+            <cite id="message-author-name"></cite>
+          </footer>
+        </blockquote>
+        <div class="message-error" id="message-error" hidden>
+          <p>Mesajlar yüklenemedi. Lütfen sayfayı yenileyin.</p>
+        </div>
+        <div class="message-empty" id="message-empty" hidden>
+          <p>Henüz mesaj eklenmemiş.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mesaj Navigasyonu -->
+    <nav class="message-nav" aria-label="Mesaj gezinme kontrolleri">
+      <button class="nav-btn" id="btn-prev" aria-label="Önceki mesaj">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span>Önceki</span>
+      </button>
+
+      <div class="message-timer" aria-hidden="true">
+        <div class="timer-track">
+          <div class="timer-fill" id="timer-fill"></div>
+        </div>
+      </div>
+
+      <button class="nav-btn" id="btn-next" aria-label="Sonraki mesaj">
+        <span>Sonraki</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </nav>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
