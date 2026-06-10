@@ -1,0 +1,102 @@
+[
+  {
+    "id": 1,
+    "name": "Annen",
+    "messages": [
+      {
+        "id": 101,
+        "text": "Her sabah gözlerini açtığında, senin için dua ediyorum. Bu yolda yalnız değilsin."
+      },
+      {
+        "id": 102,
+        "text": "Sana olan inancım hiç sarsılmadı. Bugün de yarın da yanındayım."
+      },
+      {
+        "id": 103,
+        "text": "Yorulduğunda bil ki, senin yorgunluğun bizim için de onurdur."
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Baban",
+    "messages": [
+      {
+        "id": 201,
+        "text": "Güçlü ol. Bu süreci geçen herkes, bir gün bu günlere şükredecek."
+      },
+      {
+        "id": 202,
+        "text": "Emek asla boşa gitmez. Attığın her adım bir yere çıkar."
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Hocaefendi",
+    "messages": [
+      {
+        "id": 301,
+        "text": "Sabır en güzel azıktır. Bugünün sabrı yarının meyvesidir."
+      },
+      {
+        "id": 302,
+        "text": "İlim yolunda çekilen her meşakkat, ahirette nur olur."
+      },
+      {
+        "id": 303,
+        "text": "Dua eden bir kalp asla yalnız değildir."
+      },
+      {
+        "id": 304,
+        "text": "Sizi tanıyan herkes bu yolda sizinle birlikte yürüyor."
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Kardeşin",
+    "messages": [
+      {
+        "id": 401,
+        "text": "Sen yaparsın. Her zaman yaptın, bu sefer de yapacaksın."
+      },
+      {
+        "id": 402,
+        "text": "Bittiğinde seninle kutlamak için sabırsızlanıyorum!"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Arkadaşın",
+    "messages": [
+      {
+        "id": 501,
+        "text": "Bu dönem geçecek. Ve geçtiğinde ne kadar güçlendiğini göreceksin."
+      },
+      {
+        "id": 502,
+        "text": "Kendine güven. Hazırlandın, biliyorsun, yapabilirsin."
+      },
+      {
+        "id": 503,
+        "text": "Her zorlu gün seni bir adım daha ileriye taşıyor."
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Büyükannen",
+    "messages": [
+      {
+        "id": 601,
+        "text": "Gece gündüz dualarımdasın. Allah kolaylık versin, evladım."
+      },
+      {
+        "id": 602,
+        "text": "Senin başarın hepimizin sevinci olacak."
+      }
+    ]
+  }
+]
