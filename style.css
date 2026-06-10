@@ -1,423 +1,453 @@
-/* ════════════════════════════════════════════
-   TOKENS — tek yerden değiştirilebilir
-════════════════════════════════════════════ */
+/* =========================================
+   DESIGN TOKENS
+   ========================================= */
 :root {
-  /* Renkler */
-  --bg:           #0a0a0f;
-  --bg-card:      #13131a;
-  --bg-card-hover:#1a1a24;
-  --border:       #2a2a38;
-  --border-hover: #3d3d55;
+  --color-bg:         #0D1117;
+  --color-surface:    #161B22;
+  --color-border:     #2A3340;
+  --color-gold:       #D4A843;
+  --color-gold-dim:   #A07828;
+  --color-text:       #EEE8DA;
+  --color-text-muted: #8B99A8;
+  --color-success:    #3FB950;
 
-  --text-primary:   #f0f0f5;   /* ana metin — WCAG AAA kontrast */
-  --text-secondary: #9898b0;   /* ikincil metin */
-  --text-muted:     #55556a;   /* ipucu metinler */
+  --font-main: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
 
-  --accent:       #5b8dee;     /* mavi vurgu */
-  --accent-dim:   rgba(91,141,238,0.12);
+  --radius-card:  16px;
+  --radius-btn:   10px;
 
-  /* Tipografi */
-  --font: 'Inter', system-ui, -apple-system, sans-serif;
-
-  /* Boşluklar */
-  --gap-sm:  0.75rem;
-  --gap-md:  1.5rem;
-  --gap-lg:  3rem;
-  --gap-xl:  5rem;
-
-  /* Köşe yuvarlaklığı */
-  --radius:  12px;
-
-  /* Konteyner genişliği */
-  --max-w:   1100px;
+  --transition-fast:   150ms ease;
+  --transition-medium: 300ms ease;
+  --transition-slow:   500ms ease;
 }
 
-/* ════════════════════════════════════════════
-   RESET
-════════════════════════════════════════════ */
+/* =========================================
+   RESET & BASE
+   ========================================= */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* ════════════════════════════════════════════
-   TEMEL
-════════════════════════════════════════════ */
 html {
-  font-size: 16px;
   scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background-color: var(--bg);
-  color: var(--text-primary);
-  font-family: var(--font);
-  font-size: 1rem;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-main);
+  font-size: 16px;
   line-height: 1.6;
   min-height: 100vh;
-  /* Yumuşak gradyan alt kısımda */
-  background-image: radial-gradient(ellipse 100% 50% at 50% 0%, #101018 0%, var(--bg) 60%);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Odak halkası — klavye erişilebilirliği */
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-
-/* ════════════════════════════════════════════
-   KONTEYNER
-════════════════════════════════════════════ */
+/* =========================================
+   LAYOUT
+   ========================================= */
 .container {
   width: 100%;
-  max-width: var(--max-w);
-  margin-inline: auto;
-  padding-inline: clamp(1rem, 5vw, 2.5rem);
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
 }
 
-/* ════════════════════════════════════════════
+/* =========================================
    HEADER
-════════════════════════════════════════════ */
+   ========================================= */
 .site-header {
-  padding-top: clamp(3rem, 8vw, 6rem);
-  padding-bottom: clamp(2rem, 5vw, 4rem);
   text-align: center;
 }
 
-/* 1. Ana Başlık
-   TV'den 3-5 m uzaktan okunabilecek boyut */
 .main-title {
-  font-size: clamp(2rem, 6vw, 5.5rem);
-  font-weight: 900;
-  letter-spacing: -0.025em;
+  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
   line-height: 1.1;
-  color: var(--text-primary);
-  margin-bottom: 0.75rem;
+  color: var(--color-text);
+  margin-bottom: 16px;
 }
 
-/* 2. Açıklama */
+/* Gold underline on title */
+.main-title::after {
+  content: '';
+  display: block;
+  width: 64px;
+  height: 3px;
+  background: var(--color-gold);
+  margin: 16px auto 0;
+  border-radius: 2px;
+}
+
 .subtitle {
-  font-size: clamp(1rem, 2.2vw, 1.4rem);
-  font-weight: 400;
-  color: var(--text-secondary);
-  max-width: 55ch;
-  margin-inline: auto;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--color-text-muted);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.7;
 }
 
-/* ════════════════════════════════════════════
-   GERİ SAYIM BÖLGESİ
-════════════════════════════════════════════ */
+/* =========================================
+   COUNTDOWN
+   ========================================= */
 .countdown-section {
-  padding-block: clamp(2rem, 5vw, 4rem);
   text-align: center;
 }
 
-/* Geri sayım panosu */
-.countdown-board {
-  display: inline-flex;
-  align-items: flex-start;
+.countdown {
+  display: flex;
   justify-content: center;
-  gap: clamp(0.5rem, 2.5vw, 2rem);
-  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-/* Tek birim (Gün / Saat / ...) */
 .countdown-unit {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(0.4rem, 1vw, 0.8rem);
-  min-width: clamp(64px, 14vw, 160px);
-
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: clamp(0.8rem, 2vw, 1.8rem) clamp(0.5rem, 1.5vw, 1.5rem);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: 20px 24px 16px;
+  min-width: 90px;
+  transition: border-color var(--transition-medium);
 }
 
-/* Sayı */
-.countdown-digit {
-  font-size: clamp(2.8rem, 9vw, 8rem);
-  font-weight: 900;
+.countdown-unit:hover {
+  border-color: var(--color-gold-dim);
+}
+
+.countdown-value {
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
   line-height: 1;
-  letter-spacing: -0.02em;
+  color: var(--color-gold);
   font-variant-numeric: tabular-nums;
-  color: var(--text-primary);
-  /* Hafif mavi parıltı — okunabilirliği bozmaz */
-  text-shadow: 0 0 40px rgba(91,141,238,0.3);
-  display: block;
+  transition: color var(--transition-fast);
 }
 
-/* Etiket (GÜN / SAAT) */
 .countdown-label {
-  font-size: clamp(0.6rem, 1.4vw, 0.95rem);
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: var(--color-text-muted);
+  margin-top: 8px;
 }
 
-/* Ayraç ":" */
-.countdown-sep {
-  font-size: clamp(2rem, 7vw, 6rem);
-  font-weight: 900;
+.countdown-separator {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 300;
+  color: var(--color-border);
   line-height: 1;
-  color: var(--text-muted);
-  /* Sayı bloklarının üst kısmıyla hizala */
-  padding-top: clamp(0.5rem, 1.5vw, 1.2rem);
-  /* Sayfayı yenilemeyi önlemek için blink animasyonu saniyelikte */
-  align-self: flex-start;
+  padding-bottom: 24px;
+  align-self: center;
 }
 
-/* ═══ KUTLAMA ═══ */
+/* Celebration */
 .celebration {
-  padding: clamp(2rem, 5vw, 4rem) 0;
-  text-align: center;
-}
-
-.celebration-emoji {
-  display: block;
-  font-size: clamp(4rem, 12vw, 8rem);
-  line-height: 1;
-  margin-bottom: 1rem;
+  padding: 32px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-card);
+  animation: fadeIn var(--transition-slow) ease;
 }
 
 .celebration-text {
-  font-size: clamp(2rem, 6vw, 4.5rem);
-  font-weight: 900;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  margin-bottom: 0.5rem;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 700;
+  color: var(--color-gold);
 }
 
 .celebration-sub {
-  font-size: clamp(1rem, 2vw, 1.4rem);
-  color: var(--text-secondary);
+  margin-top: 8px;
+  color: var(--color-text-muted);
 }
 
-/* ════════════════════════════════════════════
-   MESAJLAR BÖLGESİ
-════════════════════════════════════════════ */
-.quotes-section {
-  padding-block: clamp(2rem, 5vw, 4rem) clamp(3rem, 8vw, 6rem);
-  /* Geri sayım ile görsel ayrım */
-  border-top: 1px solid var(--border);
-}
-
-/* 4. Bölüm başlığı */
-.section-title {
-  font-size: clamp(1.4rem, 3.5vw, 2.5rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--text-primary);
-  margin-bottom: clamp(1.5rem, 4vw, 3rem);
-  text-align: center;
-}
-
-/* ─── Durum mesajları ─── */
-.state-loading,
-.state-error,
-.state-empty {
-  text-align: center;
-  padding: clamp(2rem, 5vw, 4rem) 1rem;
-  color: var(--text-secondary);
-  font-size: 1rem;
-}
-
-/* Döner yükleyici */
-.spinner {
-  display: inline-block;
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 2px solid var(--border);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  vertical-align: middle;
-  margin-right: 0.5rem;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Hata metni */
-.state-error-text {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #ff7070;
-  margin-bottom: 0.75rem;
-}
-
-.state-error-hint {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  line-height: 1.7;
-  max-width: 55ch;
-  margin-inline: auto;
-  margin-bottom: 1.5rem;
-}
-
-.state-error-hint code,
-.state-empty code {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0.1em 0.4em;
-  font-size: 0.85em;
-  color: var(--text-primary);
-}
-
-/* Tekrar Dene butonu */
-.retry-btn {
-  display: inline-block;
-  background: var(--accent-dim);
-  border: 1px solid var(--accent);
-  color: var(--text-primary);
-  font-family: var(--font);
-  font-size: 0.9rem;
-  font-weight: 600;
-  padding: 0.55rem 1.4rem;
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.retry-btn:hover,
-.retry-btn:focus-visible {
-  background: rgba(91,141,238,0.22);
-}
-
-/* ─── Kart ızgarası ─── */
-.cards-grid {
-  display: grid;
-  /* Minimum 280px; ekran genişlese sütun sayısı artar */
-  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
-  gap: clamp(1rem, 2.5vw, 1.75rem);
-}
-
-/* ─── Mesaj kartı ─── */
-.card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: clamp(1.2rem, 2.5vw, 2rem);
+/* =========================================
+   PROGRESS BAR
+   ========================================= */
+.progress-section {
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
-  /* Hover geçişi */
-  transition: border-color 0.2s, background-color 0.2s, transform 0.2s;
+  gap: 8px;
 }
 
-.card:hover {
-  border-color: var(--border-hover);
-  background-color: var(--bg-card-hover);
-  transform: translateY(-3px);
+.progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--color-surface);
+  border-radius: 99px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
 }
 
-/* Tırnak sembolü */
-.card-quote-mark {
-  font-size: 2rem;
-  line-height: 1;
-  color: var(--accent);
-  opacity: 0.35;
-  font-family: Georgia, 'Times New Roman', serif;
-  /* metin hizasından önce koy ama boşluk almayalım */
-  display: block;
-  margin-bottom: -0.4rem;
+.progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--color-gold-dim), var(--color-gold));
+  border-radius: 99px;
+  transition: width 1s ease;
 }
 
-/* Mesaj metni */
-.card-text {
-  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
-  font-weight: 400;
-  line-height: 1.75;
-  color: var(--text-primary);
-  /* italik — alıntı hissi verir ama okunabilirliği bozmaz */
-  font-style: italic;
+.progress-label {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  text-align: right;
+  letter-spacing: 0.02em;
 }
 
-/* İsim çizgisi */
-.card-author {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding-top: 0.3rem;
-  border-top: 1px solid var(--border);
+/* =========================================
+   MESSAGE CARD
+   ========================================= */
+.message-section {
+  position: relative;
 }
 
-/* Avatar — ismin baş harfi */
-.card-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background-color: var(--accent-dim);
-  border: 1px solid var(--accent);
+.message-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: clamp(28px, 5vw, 52px);
+  min-height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  flex-shrink: 0;
-  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
 }
 
-.card-name {
-  font-size: clamp(0.85rem, 1.4vw, 1rem);
-  font-weight: 600;
-  color: var(--text-primary);
+/* Subtle gold glow top-left */
+.message-card::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  left: -60px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(212, 168, 67, 0.07) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-/* ════════════════════════════════════════════
-   FOOTER
-════════════════════════════════════════════ */
-.site-footer {
-  border-top: 1px solid var(--border);
-  padding-block: clamp(1.5rem, 3vw, 2.5rem);
+.message-content {
   text-align: center;
-  color: var(--text-muted);
-  font-size: clamp(0.75rem, 1.2vw, 0.875rem);
+  max-width: 640px;
+  margin: 0 auto;
 }
 
-/* ════════════════════════════════════════════
-   YARDIMCI
-════════════════════════════════════════════ */
-/* JS çalışana kadar gizleme için kullanılır */
-[hidden] { display: none !important; }
-
-/* ════════════════════════════════════════════
-   RESPONSİVE — KÜÇÜK EKRANLAR
-════════════════════════════════════════════ */
-
-/* 480px altında ayraçları gizle, daha sıkı padding */
-@media (max-width: 480px) {
-  .countdown-sep { display: none; }
-  .countdown-board { gap: 0.35rem; }
-  .countdown-unit { min-width: 68px; }
+/* Big quotation mark */
+.message-content::before {
+  content: '\201C';
+  display: block;
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 0.6;
+  color: var(--color-gold);
+  opacity: 0.4;
+  margin-bottom: 16px;
+  font-family: Georgia, serif;
 }
 
-/* ════════════════════════════════════════════
-   RESPONSİVE — GENİŞ TV EKRANLARI (≥1800px)
-   Fontlar orantılı büyür; clamp zaten işi yapıyor.
-   Burada sadece grid sütun sayısını sınırlıyoruz.
-════════════════════════════════════════════ */
-@media (min-width: 1800px) {
-  :root { --max-w: 1400px; }
-  .cards-grid {
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+.message-text {
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.8;
+  color: var(--color-text);
+  margin-bottom: 24px;
+}
+
+.message-author {
+  font-style: normal;
+}
+
+.message-author cite {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-gold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-style: normal;
+}
+
+.message-author cite::before {
+  content: '— ';
+  opacity: 0.6;
+}
+
+/* States */
+.message-loading,
+.message-error,
+.message-empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+}
+
+/* Fade animation */
+.message-card.fade-out .message-content {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--transition-medium), transform var(--transition-medium);
+}
+
+.message-card.fade-in .message-content {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--transition-medium), transform var(--transition-medium);
+}
+
+.message-content {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--transition-medium), transform var(--transition-medium);
+}
+
+/* =========================================
+   MESSAGE NAV
+   ========================================= */
+.message-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.nav-btn:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+  border-color: var(--color-gold-dim);
+}
+
+.nav-btn:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+/* Message auto-timer strip */
+.message-timer {
+  flex: 1;
+  max-width: 160px;
+}
+
+.timer-track {
+  height: 3px;
+  background: var(--color-border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.timer-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--color-gold);
+  border-radius: 99px;
+  transform-origin: left;
+  animation: timerShrink 20s linear forwards;
+}
+
+@keyframes timerShrink {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+/* =========================================
+   CELEBRATIONS & ANIMATIONS
+   ========================================= */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+/* Tablet */
+@media (max-width: 600px) {
+  .container {
+    padding: 32px 16px 48px;
+    gap: 36px;
+  }
+
+  .countdown {
+    gap: 6px;
+  }
+
+  .countdown-unit {
+    min-width: 72px;
+    padding: 14px 12px 12px;
+  }
+
+  .countdown-separator {
+    padding-bottom: 18px;
+  }
+
+  .message-card {
+    padding: 28px 20px;
+    min-height: 200px;
+  }
+
+  .nav-btn span {
+    display: none;
+  }
+
+  .nav-btn {
+    padding: 12px;
+  }
+
+  .message-timer {
+    max-width: 80px;
   }
 }
 
-/* ════════════════════════════════════════════
-   ERİŞİLEBİLİRLİK — HAREKET KISITLAMA
-════════════════════════════════════════════ */
+/* Large screens / TV */
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1100px;
+    padding: 72px 48px 96px;
+    gap: 64px;
+  }
+
+  .countdown-unit {
+    min-width: 140px;
+    padding: 28px 32px 20px;
+  }
+}
+
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .timer-fill {
+    animation: none;
   }
 }

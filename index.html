@@ -3,111 +3,103 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="30 Haziran 2026'ya geri sayım ve ziyaretçi mesajları." />
-  <meta name="theme-color" content="#0a0a0f" />
-  <title>30 Haziran 2026</title>
-
-  <!-- Google Fonts: Inter — okunabilirlik öncelikli -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-
+  <meta name="description" content="İmtihana hazırlanan talebeler için motivasyon ve geri sayım uygulaması." />
+  <title>30 Haziran'a Kalan Süre</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <main class="container" role="main">
 
-  <!-- ══════════════════════════════════════
-       SAYFA ÜSTÜ
-  ══════════════════════════════════════ -->
-  <header class="site-header">
-    <div class="container">
-
-      <!-- 1. Ana Başlık -->
+    <!-- Başlık -->
+    <header class="site-header">
       <h1 class="main-title">30 Haziran'a Kalan Süre</h1>
+      <p class="subtitle">Bu yolda yalnız değilsin. Seni seven, sana inanan, senin için dua eden insanlar var.</p>
+    </header>
 
-      <!-- 2. Kısa açıklama -->
-      <p class="subtitle">Bu özel güne birlikte geri sayıyoruz.</p>
-
-    </div>
-  </header>
-
-  <main>
-    <div class="container">
-
-      <!-- 3. Geri Sayım -->
-      <section class="countdown-section" aria-label="Geri sayım">
-
-        <!-- Aktif geri sayım -->
-        <div class="countdown-board" id="countdownBoard" aria-live="polite">
-          <div class="countdown-unit">
-            <span class="countdown-digit" id="days">00</span>
-            <span class="countdown-label">Gün</span>
-          </div>
-          <span class="countdown-sep" aria-hidden="true">:</span>
-          <div class="countdown-unit">
-            <span class="countdown-digit" id="hours">00</span>
-            <span class="countdown-label">Saat</span>
-          </div>
-          <span class="countdown-sep" aria-hidden="true">:</span>
-          <div class="countdown-unit">
-            <span class="countdown-digit" id="minutes">00</span>
-            <span class="countdown-label">Dakika</span>
-          </div>
-          <span class="countdown-sep" aria-hidden="true">:</span>
-          <div class="countdown-unit">
-            <span class="countdown-digit" id="seconds">00</span>
-            <span class="countdown-label">Saniye</span>
-          </div>
+    <!-- Geri Sayım -->
+    <section class="countdown-section" aria-label="Geri sayım">
+      <div class="countdown" id="countdown">
+        <div class="countdown-unit">
+          <span class="countdown-value" id="days">--</span>
+          <span class="countdown-label">Gün</span>
         </div>
-
-        <!-- Süre dolunca gösterilir -->
-        <div class="celebration" id="celebration" aria-live="assertive" hidden>
-          <span class="celebration-emoji" aria-hidden="true">🎉</span>
-          <p class="celebration-text">Bugün büyük gün!</p>
-          <p class="celebration-sub">30 Haziran 2026 geldi çattı.</p>
+        <div class="countdown-separator" aria-hidden="true">:</div>
+        <div class="countdown-unit">
+          <span class="countdown-value" id="hours">--</span>
+          <span class="countdown-label">Saat</span>
         </div>
+        <div class="countdown-separator" aria-hidden="true">:</div>
+        <div class="countdown-unit">
+          <span class="countdown-value" id="minutes">--</span>
+          <span class="countdown-label">Dakika</span>
+        </div>
+        <div class="countdown-separator" aria-hidden="true">:</div>
+        <div class="countdown-unit">
+          <span class="countdown-value" id="seconds">--</span>
+          <span class="countdown-label">Saniye</span>
+        </div>
+      </div>
 
-      </section>
+      <!-- Kutlama mesajı (gizli) -->
+      <div class="celebration" id="celebration" hidden aria-live="polite">
+        <p class="celebration-text">Tebrikler! Bu güne ulaştın. 🎉</p>
+        <p class="celebration-sub">Emeklerin boşa gitmedi. Hayırlı olsun!</p>
+      </div>
+    </section>
 
-      <!-- 4. Mesajlar Bölümü -->
-      <section class="quotes-section" aria-label="Mesajlar">
-        <h2 class="section-title">Bu Güne Notlar</h2>
+    <!-- İlerleme Çubuğu -->
+    <section class="progress-section" aria-label="İlerleme göstergesi">
+      <div class="progress-bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Geçen süre">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <p class="progress-label" id="progress-label">Yol alınıyor…</p>
+    </section>
 
-        <!-- Yüklenme durumu -->
-        <div class="state-loading" id="stateLoading" aria-live="polite">
-          <span class="spinner" aria-hidden="true"></span>
+    <!-- Mesaj Kartı -->
+    <section class="message-section" aria-label="Motivasyon mesajı" aria-live="polite" aria-atomic="true">
+      <div class="message-card" id="message-card">
+        <div class="message-loading" id="message-loading">
           <span>Mesajlar yükleniyor…</span>
         </div>
-
-        <!-- Hata durumu -->
-        <div class="state-error" id="stateError" hidden aria-live="assertive">
-          <p class="state-error-text">⚠️ Mesajlar yüklenemedi.</p>
-          <p class="state-error-hint">
-            <code>quotes.json</code> dosyasının aynı klasörde olduğundan emin ol.
-            Sayfayı doğrudan dosya sistemiyle açıyorsan bir yerel sunucu kullan
-            (<code>npx serve .</code> veya VS Code Live Server).
-          </p>
-          <button class="retry-btn" id="retryBtn" type="button">Tekrar Dene</button>
+        <blockquote class="message-content" id="message-content" hidden>
+          <p class="message-text" id="message-text"></p>
+          <footer class="message-author">
+            <cite id="message-author-name"></cite>
+          </footer>
+        </blockquote>
+        <div class="message-error" id="message-error" hidden>
+          <p>Mesajlar yüklenemedi. Lütfen sayfayı yenileyin.</p>
         </div>
-
-        <!-- Boş dosya durumu -->
-        <div class="state-empty" id="stateEmpty" hidden>
-          <p>Henüz mesaj eklenmemiş. <code>quotes.json</code> dosyasını düzenleyerek başlayabilirsin.</p>
+        <div class="message-empty" id="message-empty" hidden>
+          <p>Henüz mesaj eklenmemiş.</p>
         </div>
+      </div>
+    </section>
 
-        <!-- Kart ızgarası -->
-        <div class="cards-grid" id="cardsGrid" aria-label="Mesaj kartları"></div>
+    <!-- Mesaj Navigasyonu -->
+    <nav class="message-nav" aria-label="Mesaj gezinme kontrolleri">
+      <button class="nav-btn" id="btn-prev" aria-label="Önceki mesaj">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span>Önceki</span>
+      </button>
 
-      </section>
+      <div class="message-timer" aria-hidden="true">
+        <div class="timer-track">
+          <div class="timer-fill" id="timer-fill"></div>
+        </div>
+      </div>
 
-    </div><!-- /container -->
+      <button class="nav-btn" id="btn-next" aria-label="Sonraki mesaj">
+        <span>Sonraki</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </nav>
+
   </main>
-
-  <footer class="site-footer">
-    <div class="container">
-      <p>30 Haziran 2026 · Geri sayım her saniye güncellenir.</p>
-    </div>
-  </footer>
 
   <script src="script.js"></script>
 </body>

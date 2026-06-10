@@ -1,213 +1,306 @@
-/**
- * script.js
- * ---------
- * 1. Geri sayımı başlatır ve her saniye günceller.
- * 2. quotes.json dosyasından mesajları Fetch API ile çeker.
- * 3. Mesajları kart olarak DOM'a ekler.
- * 4. Hata ve boş durum mesajlarını yönetir.
- */
-
-/* ─────────────────────────────────────────
-   AYARLAR — gerekirse buradan düzenle
-───────────────────────────────────────── */
-
-/** Geri sayım hedef tarihi (yerel saat: 30 Haziran 2026 00:00:00) */
+/* =========================================
+   CONFIGURATION
+   =========================================
+   Hedef tarihi değiştirmek için yalnızca
+   bu satırı güncelleyin:
+   ========================================= */
 const TARGET_DATE = new Date('2026-06-30T00:00:00');
 
-/** Mesaj JSON dosyasının yolu (index.html ile aynı klasörde) */
-const QUOTES_FILE = 'quotes.json';
+/* Başlangıç tarihi (ilerleme çubuğu için) */
+const START_DATE = new Date('2025-09-01T00:00:00');
 
-/* ─────────────────────────────────────────
+/* Mesaj gösterim süresi (ms) */
+const MESSAGE_DURATION = 20000;
+
+/* =========================================
+   STATE
+   ========================================= */
+let allMessages = [];       // Düzleştirilmiş mesaj listesi
+let shuffledQueue = [];     // Mevcut döngü sırası
+let currentIndex = 0;       // Sıradaki mesaj indeksi
+let messageTimer = null;    // Otomatik geçiş zamanlayıcısı
+let countdownTimer = null;  // Geri sayım zamanlayıcısı
+let touchStartX = 0;        // Swipe başlangıcı
+
+/* =========================================
+   DOM REFERANSLARI
+   ========================================= */
+const $ = (id) => document.getElementById(id);
+
+const elDays      = $('days');
+const elHours     = $('hours');
+const elMinutes   = $('minutes');
+const elSeconds   = $('seconds');
+const elCountdown = $('countdown');
+const elCelebration   = $('celebration');
+const elProgressFill  = $('progress-fill');
+const elProgressLabel = $('progress-label');
+const elCard          = $('message-card');
+const elContent       = $('message-content');
+const elText          = $('message-text');
+const elAuthor        = $('message-author-name');
+const elLoading       = $('message-loading');
+const elError         = $('message-error');
+const elEmpty         = $('message-empty');
+const elTimerFill     = $('timer-fill');
+const elBtnPrev       = $('btn-prev');
+const elBtnNext       = $('btn-next');
+
+/* =========================================
    GERİ SAYIM
-───────────────────────────────────────── */
-
-/**
- * Bir sayıyı 2 haneli string'e çevirir.
- * @param {number} n
- * @returns {string}
- */
+   ========================================= */
 function pad(n) {
-  return String(Math.max(0, Math.floor(n))).padStart(2, '0');
+  return String(Math.max(0, n)).padStart(2, '0');
 }
 
-/** DOM referansları */
-const domDays    = document.getElementById('days');
-const domHours   = document.getElementById('hours');
-const domMinutes = document.getElementById('minutes');
-const domSeconds = document.getElementById('seconds');
-const domBoard   = document.getElementById('countdownBoard');
-const domCelebration = document.getElementById('celebration');
-
-/** Önceki değerleri saklayarak sadece değişen haneleri günceller */
-const prevValues = { days: '', hours: '', minutes: '', seconds: '' };
-
-/** Geri sayımı hesaplar ve DOM'u günceller */
 function updateCountdown() {
-  const now  = new Date();
-  const diff = TARGET_DATE - now;   /* milisaniye fark */
+  const now  = Date.now();
+  const diff = TARGET_DATE.getTime() - now;
 
-  /* Süre doldu */
   if (diff <= 0) {
-    domBoard.hidden = true;
-    domCelebration.hidden = false;
-    return; /* interval'i durdurmaya gerek yok, gereksiz işlem olmaz */
+    // Süre doldu
+    elCountdown.hidden = true;
+    elCelebration.hidden = false;
+
+    const progressBar = document.querySelector('.progress-section');
+    if (progressBar) progressBar.hidden = true;
+
+    clearInterval(countdownTimer);
+    return;
   }
 
-  const d = Math.floor(diff / 86_400_000);
-  const h = Math.floor((diff % 86_400_000) / 3_600_000);
-  const m = Math.floor((diff % 3_600_000) / 60_000);
-  const s = Math.floor((diff % 60_000) / 1_000);
+  const totalSecs = Math.floor(diff / 1000);
+  const days    = Math.floor(totalSecs / 86400);
+  const hours   = Math.floor((totalSecs % 86400) / 3600);
+  const minutes = Math.floor((totalSecs % 3600) / 60);
+  const seconds = totalSecs % 60;
 
-  const newValues = {
-    days:    pad(d),
-    hours:   pad(h),
-    minutes: pad(m),
-    seconds: pad(s),
-  };
+  elDays.textContent    = pad(days);
+  elHours.textContent   = pad(hours);
+  elMinutes.textContent = pad(minutes);
+  elSeconds.textContent = pad(seconds);
 
-  /* Sadece değişen elemanı güncelle — gereksiz DOM yazımını önler */
-  if (newValues.days    !== prevValues.days)    { domDays.textContent    = newValues.days;    prevValues.days    = newValues.days;    }
-  if (newValues.hours   !== prevValues.hours)   { domHours.textContent   = newValues.hours;   prevValues.hours   = newValues.hours;   }
-  if (newValues.minutes !== prevValues.minutes) { domMinutes.textContent = newValues.minutes; prevValues.minutes = newValues.minutes; }
-  if (newValues.seconds !== prevValues.seconds) { domSeconds.textContent = newValues.seconds; prevValues.seconds = newValues.seconds; }
+  // Erişilebilirlik: aria-valuenow (ilerleme çubuğunda güncellenir)
+  updateProgress();
 }
 
-/* İlk çağrı — sayfa açılır açılmaz değerleri göster */
-updateCountdown();
+/* =========================================
+   İLERLEME ÇUBUĞU
+   ========================================= */
+function updateProgress() {
+  const total   = TARGET_DATE.getTime() - START_DATE.getTime();
+  const elapsed = Date.now() - START_DATE.getTime();
+  const pct     = Math.min(100, Math.max(0, (elapsed / total) * 100));
 
-/* Sonraki çağrıları bir sonraki tam saniyeye hizala (daha az sürüklenme) */
-const msUntilNextSecond = 1000 - (Date.now() % 1000);
-setTimeout(() => {
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-}, msUntilNextSecond);
+  elProgressFill.style.width = pct.toFixed(2) + '%';
 
-/* ─────────────────────────────────────────
-   MESAJLAR — FETCH
-───────────────────────────────────────── */
+  const track = elProgressFill.closest('[role="progressbar"]');
+  if (track) track.setAttribute('aria-valuenow', Math.round(pct));
 
-/** DOM referansları */
-const domLoading  = document.getElementById('stateLoading');
-const domError    = document.getElementById('stateError');
-const domEmpty    = document.getElementById('stateEmpty');
-const domGrid     = document.getElementById('cardsGrid');
-const domRetry    = document.getElementById('retryBtn');
-
-/**
- * Bir string'i HTML'de güvenli şekilde göstermek için escape eder.
- * @param {string} str
- * @returns {string}
- */
-function escapeHtml(str) {
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
+  elProgressLabel.textContent = pct.toFixed(1) + '% tamamlandı';
 }
 
-/**
- * Bir kişinin adından baş harflerini üretir (en fazla 2).
- * Örn: "Ahmet Yılmaz" → "AY"
- * @param {string} name
- * @returns {string}
- */
-function initials(name) {
-  return name
-    .trim()
-    .split(/\s+/)
-    .map(word => word[0] ?? '')
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-}
-
-/**
- * Tek bir mesaj kartı DOM elemanı oluşturur.
- * @param {{ name: string, quote: string }} item
- * @returns {HTMLElement}
- */
-function createCard(item) {
-  const article = document.createElement('article');
-  article.className = 'card';
-  article.setAttribute('tabindex', '0'); /* klavye ile ulaşılabilir */
-
-  article.innerHTML = `
-    <span class="card-quote-mark" aria-hidden="true">"</span>
-    <p class="card-text">${escapeHtml(item.quote)}</p>
-    <div class="card-author">
-      <div class="card-avatar" aria-hidden="true">${escapeHtml(initials(item.name))}</div>
-      <span class="card-name">${escapeHtml(item.name)}</span>
-    </div>
-  `;
-
-  return article;
-}
-
-/**
- * Durum elemanlarını sıfırlar (hepsini gizler).
- */
-function resetStates() {
-  domLoading.hidden = true;
-  domError.hidden   = true;
-  domEmpty.hidden   = true;
-  domGrid.innerHTML = '';
-}
-
-/**
- * quotes.json dosyasını çeker ve kartları oluşturur.
- */
-async function loadQuotes() {
-  resetStates();
-  domLoading.hidden = false;
-
+/* =========================================
+   MESAJ SİSTEMİ — Yükleme
+   ========================================= */
+async function loadMessages() {
   try {
-    const response = await fetch(QUOTES_FILE);
+    const res  = await fetch('quotes.json');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
 
-    /* HTTP hata kontrolü (404, 500 vb.) */
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-
-    domLoading.hidden = true;
-
-    /* Boş dizi kontrolü */
-    if (!Array.isArray(data) || data.length === 0) {
-      domEmpty.hidden = false;
-      return;
-    }
-
-    /* Geçerli girişleri filtrele ve kartları oluştur */
-    const fragment = document.createDocumentFragment();
-
-    data.forEach(item => {
-      /* Her iki alan da dolu olmalı */
-      if (
-        item &&
-        typeof item.name  === 'string' && item.name.trim()  !== '' &&
-        typeof item.quote === 'string' && item.quote.trim() !== ''
-      ) {
-        fragment.appendChild(createCard(item));
+    // Tüm mesajları düzleştir; her birine sahibin adını ekle
+    const flat = [];
+    for (const person of data) {
+      for (const msg of person.messages) {
+        flat.push({
+          id:     msg.id,
+          text:   msg.text,
+          author: person.name,
+          personId: person.id
+        });
       }
-    });
+    }
 
-    if (fragment.childElementCount === 0) {
-      domEmpty.hidden = false;
+    if (flat.length === 0) {
+      showState('empty');
       return;
     }
 
-    domGrid.appendChild(fragment);
+    allMessages = flat;
+    initMessageQueue();
+    showMessage(currentIndex);
+    startMessageTimer();
 
   } catch (err) {
-    /* Hata durumu — konsola da yaz */
-    console.error('[quotes] Yüklenemedi:', err);
-    domLoading.hidden = true;
-    domError.hidden   = false;
+    console.error('Mesajlar yüklenemedi:', err);
+    showState('error');
   }
 }
 
-/* Tekrar Dene butonu */
-domRetry.addEventListener('click', loadQuotes);
+/* =========================================
+   MESAJ SİSTEMİ — Sıra (Random without repetition)
+   ========================================= */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
-/* Sayfa hazır olunca mesajları yükle */
-loadQuotes();
+/**
+ * Aynı kişi arka arkaya gelmesin diye son elemanı kontrol et.
+ * Eğer yeni dizinin başı önceki dizinin sonuyla aynı kişideyse swap yap.
+ */
+function buildQueue(lastPersonId) {
+  let queue = shuffle(allMessages);
+
+  if (lastPersonId !== undefined && queue.length > 1) {
+    if (queue[0].personId === lastPersonId) {
+      // İlk elemanı farklı bir kişiyle takas et
+      const swapIdx = queue.findIndex((m) => m.personId !== lastPersonId);
+      if (swapIdx !== -1) {
+        [queue[0], queue[swapIdx]] = [queue[swapIdx], queue[0]];
+      }
+    }
+  }
+
+  return queue;
+}
+
+function initMessageQueue() {
+  shuffledQueue = buildQueue();
+  currentIndex  = 0;
+}
+
+function nextIndex() {
+  currentIndex++;
+  if (currentIndex >= shuffledQueue.length) {
+    const lastPerson = shuffledQueue[shuffledQueue.length - 1].personId;
+    shuffledQueue = buildQueue(lastPerson);
+    currentIndex  = 0;
+  }
+}
+
+function prevIndex() {
+  currentIndex--;
+  if (currentIndex < 0) {
+    currentIndex = shuffledQueue.length - 1;
+  }
+}
+
+/* =========================================
+   MESAJ SİSTEMİ — Gösterim
+   ========================================= */
+function showState(state) {
+  elLoading.hidden = state !== 'loading';
+  elError.hidden   = state !== 'error';
+  elEmpty.hidden   = state !== 'empty';
+  elContent.hidden = state !== 'message';
+}
+
+function showMessage(idx) {
+  const msg = shuffledQueue[idx];
+  if (!msg) return;
+
+  // Geçiş animasyonu
+  elCard.classList.add('fade-out');
+
+  setTimeout(() => {
+    elText.textContent   = msg.text;
+    elAuthor.textContent = msg.author;
+    showState('message');
+
+    elCard.classList.remove('fade-out');
+    elCard.classList.add('fade-in');
+
+    setTimeout(() => {
+      elCard.classList.remove('fade-in');
+    }, 400);
+
+    resetTimerBar();
+  }, 200);
+}
+
+/* =========================================
+   MESAJ SİSTEMİ — Zamanlayıcı
+   ========================================= */
+function resetTimerBar() {
+  // CSS animasyonunu yeniden başlat
+  elTimerFill.style.animation = 'none';
+  // Reflow tetikle
+  void elTimerFill.offsetWidth;
+  elTimerFill.style.animation = '';
+}
+
+function startMessageTimer() {
+  clearTimeout(messageTimer);
+  messageTimer = setTimeout(goNext, MESSAGE_DURATION);
+}
+
+function resetMessageTimer() {
+  clearTimeout(messageTimer);
+  startMessageTimer();
+}
+
+/* =========================================
+   NAVİGASYON
+   ========================================= */
+function goNext() {
+  if (allMessages.length === 0) return;
+  nextIndex();
+  showMessage(currentIndex);
+  resetMessageTimer();
+}
+
+function goPrev() {
+  if (allMessages.length === 0) return;
+  prevIndex();
+  showMessage(currentIndex);
+  resetMessageTimer();
+}
+
+/* =========================================
+   EVENT LİSTENERS
+   ========================================= */
+elBtnNext.addEventListener('click', goNext);
+elBtnPrev.addEventListener('click', goPrev);
+
+// Klavye desteği
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    goNext();
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    goPrev();
+  }
+});
+
+// Swipe desteği (mobil)
+document.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].clientX;
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) < 40) return; // Çok kısa swipe yoksay
+  if (dx < 0) goNext();
+  else goPrev();
+}, { passive: true });
+
+/* =========================================
+   BAŞLATMA
+   ========================================= */
+function init() {
+  // İlk geri sayım güncellemesini hemen yap
+  updateCountdown();
+  countdownTimer = setInterval(updateCountdown, 1000);
+
+  // Mesajları yükle
+  loadMessages();
+}
+
+init();
