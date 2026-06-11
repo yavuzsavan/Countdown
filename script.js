@@ -1,370 +1,212 @@
-/**
- * ════════════════════════════════════════════════
- *  Tekamüle Geçiş İmtihanı — script.js
- *  ─────────────────────────────────────────────
- *  Tasarım ilkeleri (mühendislik perspektifi):
- *
- *  1. SINGLE SOURCE OF TRUTH (CONFIG nesnesi)
- *     Tüm ayarlar tek yerde; hiçbir sihirli sayı
- *     kod içine gömülmez.
- *
- *  2. STATE MAKİNESİ
- *     Mesaj sistemi açık durumlarla yönetilir:
- *     loading → ready | error | empty
- *     Gelecekte yeni durum eklemek önemsizdir.
- *
- *  3. BELLEK SIZDIRMAMA
- *     setInterval / setTimeout referansları
- *     saklanır ve clearInterval/clearTimeout ile
- *     temizlenir.  Sayfa görünmez olduğunda
- *     (Page Visibility API) zamanlayıcılar durur;
- *     geri döndüğünde devam eder.
- *     → TV'de uzun süre açık kalabilir.
- *
- *  4. GENİŞLEYEBİLİR VERİ YAPISI
- *     FlatMessage tipine yeni alan eklemek
- *     sadece loadMessages() içinde bir satırdır.
- *
- *  5. ERİŞİLEBİLİRLİK
- *     Klavye, swipe, aria-valuenow güncellemesi.
- * ════════════════════════════════════════════════
- */
+/* ============================================================
+   CONFIGURATION — change only this line to update the target date
+   ============================================================ */
+const TARGET_DATE = new Date('2026-06-30T00:00:00');
 
-/* ────────────────────────────────────────────────
-   YAPILANDIRMA  ← değiştirilmesi gereken tek yer
-──────────────────────────────────────────────── */
-const CONFIG = Object.freeze({
-  /** Hedef tarih: sadece bu satırı güncelleyin */
-  targetDate: new Date('2026-06-30T00:00:00'),
+/* ============================================================
+   COUNTDOWN
+   ============================================================ */
+(function initCountdown() {
+  const els = {
+    days:    document.getElementById('days'),
+    hours:   document.getElementById('hours'),
+    minutes: document.getElementById('minutes'),
+    seconds: document.getElementById('seconds'),
+    countdown:   document.getElementById('countdown'),
+    celebration: document.getElementById('celebration'),
+  };
 
-  /**
-   * Başlangıç tarihi — ilerleme çubuğu için.
-   * Değiştirmek isterseniz burayı güncelleyin.
-   */
-  startDate: new Date('2025-09-01T00:00:00'),
+  function pad(n) { return String(n).padStart(2, '0'); }
 
-  /** Her mesajın ekranda kalma süresi (ms) */
-  messageDuration: 20_000,
+  function tick() {
+    const now  = Date.now();
+    const diff = TARGET_DATE.getTime() - now;
 
-  /** Mesaj geçiş animasyonu süresi (ms) */
-  fadeOutMs: 200,
-
-  /** Swipe için minimum piksel mesafesi */
-  swipeThreshold: 40,
-});
-
-/* ────────────────────────────────────────────────
-   DURUM (STATE)
-──────────────────────────────────────────────── */
-const state = {
-  /** @type {'loading'|'ready'|'error'|'empty'} */
-  phase: 'loading',
-
-  /** Düzleştirilmiş mesaj listesi (FlatMessage[]) */
-  messages: [],
-
-  /** Mevcut döngü sırası */
-  queue: [],
-
-  /** Sıradaki mesaj indeksi */
-  index: 0,
-
-  /** Zamanlayıcı handle'ları */
-  timers: {
-    countdown: null,
-    message:   null,
-  },
-
-  /** Swipe başlangıç X */
-  touchStartX: 0,
-
-  /** Sayfa gizlendiğinde mesaj zamanlayıcısı duraklatıldı mı */
-  messagePaused: false,
-
-  /** Duraklatıldığında kalan süre (ms) */
-  messageRemaining: CONFIG.messageDuration,
-
-  /** Mesaj zamanlayıcısı son başlatıldığında */
-  messageStartedAt: 0,
-};
-
-/* ────────────────────────────────────────────────
-   DOM REFERANSLARI
-   getElementById null döndürürse hata yutulur;
-   eksik element tüm uygulamayı kilitlemez.
-──────────────────────────────────────────────── */
-const el = (() => {
-  const ids = [
-    'days','hours','minutes','seconds',
-    'countdown','celebration',
-    'progress-fill',
-    'message-card','message-content',
-    'message-text','message-author-name',
-    'message-loading','message-error','message-empty',
-    'timer-fill',
-    'btn-prev','btn-next',
-  ];
-  return Object.fromEntries(
-    ids.map(id => [id.replace(/-([a-z])/g, (_, c) => c.toUpperCase()),
-                   document.getElementById(id)])
-  );
-})();
-
-/* ────────────────────────────────────────────────
-   YARDIMCI FONKSİYONLAR
-──────────────────────────────────────────────── */
-
-/** İki haneli format */
-const pad = n => String(Math.max(0, n)).padStart(2, '0');
-
-/**
- * Fisher-Yates karıştırma — orijinal diziyi değiştirmez.
- * @param {any[]} arr
- * @returns {any[]}
- */
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-/**
- * Kuyruğu oluşturur.
- * Son kişiyle aynı kişinin başa gelmesini engeller.
- * @param {number|undefined} lastPersonId
- * @returns {FlatMessage[]}
- */
-function buildQueue(lastPersonId) {
-  let q = shuffle(state.messages);
-  if (lastPersonId !== undefined && q.length > 1 && q[0].personId === lastPersonId) {
-    const swapAt = q.findIndex(m => m.personId !== lastPersonId);
-    if (swapAt !== -1) [q[0], q[swapAt]] = [q[swapAt], q[0]];
-  }
-  return q;
-}
-
-/* ────────────────────────────────────────────────
-   GERİ SAYIM
-──────────────────────────────────────────────── */
-function updateCountdown() {
-  const diff = CONFIG.targetDate.getTime() - Date.now();
-
-  if (diff <= 0) {
-    if (el.countdown)    el.countdown.hidden = true;
-    if (el.celebration)  el.celebration.hidden = false;
-    const progressSec = document.querySelector('.progress-section');
-    if (progressSec)     progressSec.hidden = true;
-    clearInterval(state.timers.countdown);
-    return;
-  }
-
-  const totalSecs = Math.floor(diff / 1000);
-  if (el.days)    el.days.textContent    = pad(Math.floor(totalSecs / 86400));
-  if (el.hours)   el.hours.textContent   = pad(Math.floor((totalSecs % 86400) / 3600));
-  if (el.minutes) el.minutes.textContent = pad(Math.floor((totalSecs % 3600) / 60));
-  if (el.seconds) el.seconds.textContent = pad(totalSecs % 60);
-
-  updateProgress();
-}
-
-/* ────────────────────────────────────────────────
-   İLERLEME ÇUBUĞU
-──────────────────────────────────────────────── */
-function updateProgress() {
-  const total   = CONFIG.targetDate - CONFIG.startDate;
-  const elapsed = Date.now() - CONFIG.startDate;
-  const pct     = Math.min(100, Math.max(0, (elapsed / total) * 100));
-
-  if (el.progressFill) el.progressFill.style.width = pct.toFixed(2) + '%';
-
-  const track = el.progressFill?.closest('[role="progressbar"]');
-  if (track) track.setAttribute('aria-valuenow', Math.round(pct));
-}
-
-/* ────────────────────────────────────────────────
-   MESAJ SİSTEMİ — VERİ KATMANI
-──────────────────────────────────────────────── */
-
-/**
- * @typedef {{ id: number, text: string, author: string, personId: number }} FlatMessage
- */
-
-async function loadMessages() {
-  try {
-    const res = await fetch('quotes.json');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-
-    /** @type {FlatMessage[]} */
-    const flat = [];
-    for (const person of data) {
-      for (const msg of person.messages) {
-        flat.push({
-          id:       msg.id,
-          text:     msg.text,
-          author:   person.name,
-          personId: person.id,
-          /* Gelecek sürümler için alan yerleri:
-             avatar:    person.avatar ?? null,
-             category:  msg.category ?? null,
-             date:      msg.date ?? null,
-          */
-        });
-      }
+    if (diff <= 0) {
+      // Show celebration, hide countdown
+      els.countdown.hidden   = true;
+      els.celebration.hidden = false;
+      return; // stop ticking
     }
 
-    if (flat.length === 0) { setPhase('empty'); return; }
+    const totalSec = Math.floor(diff / 1000);
+    const d = Math.floor(totalSec / 86400);
+    const h = Math.floor((totalSec % 86400) / 3600);
+    const m = Math.floor((totalSec % 3600)  / 60);
+    const s = totalSec % 60;
 
-    state.messages = flat;
-    state.queue    = buildQueue();
-    state.index    = 0;
+    els.days.textContent    = pad(d);
+    els.hours.textContent   = pad(h);
+    els.minutes.textContent = pad(m);
+    els.seconds.textContent = pad(s);
 
-    setPhase('ready');
-    renderMessage();
-    scheduleNextMessage(CONFIG.messageDuration);
-
-  } catch (err) {
-    console.error('[loadMessages]', err);
-    setPhase('error');
+    setTimeout(tick, 1000 - (Date.now() % 1000)); // sync to wall clock
   }
-}
 
-/* ────────────────────────────────────────────────
-   MESAJ SİSTEMİ — GÖRÜNÜM KATMANI
-──────────────────────────────────────────────── */
+  tick();
+})();
 
-/**
- * Uygulama fazını günceller; ilgili DOM öğelerini gösterir/gizler.
- * @param {'loading'|'ready'|'error'|'empty'} phase
- */
-function setPhase(phase) {
-  state.phase = phase;
-  if (el.messageLoading) el.messageLoading.hidden = phase !== 'loading';
-  if (el.messageError)   el.messageError.hidden   = phase !== 'error';
-  if (el.messageEmpty)   el.messageEmpty.hidden   = phase !== 'empty';
-  if (el.messageContent) el.messageContent.hidden = phase !== 'ready';
-}
+/* ============================================================
+   QUOTE SYSTEM
+   ============================================================ */
+(function initQuotes() {
+  /* ---- DOM refs ---- */
+  const quoteCard    = document.getElementById('quote-card');
+  const quoteInner   = document.getElementById('quote-inner');
+  const quoteText    = document.getElementById('quote-text');
+  const quoteAuthor  = document.getElementById('quote-author');
+  const quoteError   = document.getElementById('quote-error');
+  const quoteEmpty   = document.getElementById('quote-empty');
+  const btnPrev      = document.getElementById('btn-prev');
+  const btnNext      = document.getElementById('btn-next');
+  const msgCounter   = document.getElementById('message-counter');
 
-/** Mevcut mesajı animasyonla gösterir */
-function renderMessage() {
-  const msg = state.queue[state.index];
-  if (!msg || !el.messageCard) return;
+  /* ---- State ---- */
+  let pool       = [];   // flat list: { text, name }
+  let shuffled   = [];   // current shuffled order (indices into pool)
+  let cursor     = 0;    // position in shuffled
+  let autoTimer  = null;
+  const AUTO_DELAY = 20000; // 20 s
 
-  el.messageCard.classList.add('fade-out');
-
-  setTimeout(() => {
-    if (el.messageText)       el.messageText.textContent   = msg.text;
-    if (el.messageAuthorName) el.messageAuthorName.textContent = msg.author;
-
-    el.messageCard.classList.remove('fade-out');
-    el.messageCard.classList.add('fade-in');
-
-    setTimeout(() => el.messageCard.classList.remove('fade-in'), 400);
-
-    restartTimerBar();
-  }, CONFIG.fadeOutMs);
-}
-
-/** CSS animasyonunu sıfırlayarak yeniden başlatır */
-function restartTimerBar() {
-  if (!el.timerFill) return;
-  el.timerFill.style.animation = 'none';
-  void el.timerFill.offsetWidth; // reflow tetikle
-  el.timerFill.style.animation  = '';
-}
-
-/* ────────────────────────────────────────────────
-   MESAJ SİSTEMİ — NAVİGASYON KATMANI
-──────────────────────────────────────────────── */
-
-/** İlerle */
-function goNext() {
-  if (state.phase !== 'ready') return;
-  state.index++;
-  if (state.index >= state.queue.length) {
-    const lastPersonId = state.queue[state.queue.length - 1]?.personId;
-    state.queue = buildQueue(lastPersonId);
-    state.index = 0;
+  /* ---- Fisher-Yates shuffle ---- */
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
   }
-  renderMessage();
-  scheduleNextMessage(CONFIG.messageDuration);
-}
 
-/** Geri dön */
-function goPrev() {
-  if (state.phase !== 'ready') return;
-  state.index = (state.index - 1 + state.queue.length) % state.queue.length;
-  renderMessage();
-  scheduleNextMessage(CONFIG.messageDuration);
-}
-
-/* ────────────────────────────────────────────────
-   ZAMANLAYICI YÖNETİMİ
-   Page Visibility API ile TV/uyku optimizasyonu
-──────────────────────────────────────────────── */
-
-function scheduleNextMessage(delayMs) {
-  clearTimeout(state.timers.message);
-  state.messageRemaining  = delayMs;
-  state.messageStartedAt  = Date.now();
-  state.messagePaused     = false;
-  state.timers.message = setTimeout(goNext, delayMs);
-}
-
-function pauseMessageTimer() {
-  if (state.messagePaused || state.phase !== 'ready') return;
-  clearTimeout(state.timers.message);
-  state.messageRemaining -= (Date.now() - state.messageStartedAt);
-  state.messagePaused = true;
-}
-
-function resumeMessageTimer() {
-  if (!state.messagePaused || state.phase !== 'ready') return;
-  scheduleNextMessage(Math.max(0, state.messageRemaining));
-}
-
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) {
-    pauseMessageTimer();
-  } else {
-    resumeMessageTimer();
+  /* Avoid same author back-to-back at wrap seam */
+  function buildShuffled(prevLastName) {
+    let attempt = shuffle([...Array(pool.length).keys()]);
+    // Simple guard: if first item shares author with prevLastName, swap with second
+    if (
+      prevLastName &&
+      pool[attempt[0]].name === prevLastName &&
+      attempt.length > 1
+    ) {
+      [attempt[0], attempt[1]] = [attempt[1], attempt[0]];
+    }
+    return attempt;
   }
-});
 
-/* ────────────────────────────────────────────────
-   OLAY DİNLEYİCİLERİ
-──────────────────────────────────────────────── */
+  /* ---- Display ---- */
+  function showMessage(idx) {
+    const msg = pool[idx];
 
-el.btnNext?.addEventListener('click', goNext);
-el.btnPrev?.addEventListener('click', goPrev);
+    // fade out
+    quoteInner.classList.add('fade-out');
 
-// Klavye
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); goNext(); }
-  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goPrev(); }
-});
+    setTimeout(() => {
+      quoteText.textContent   = msg.text;
+      quoteAuthor.textContent = msg.name;
+      msgCounter.textContent  = `${cursor + 1} / ${pool.length}`;
 
-// Swipe (mobil)
-document.addEventListener('touchstart', e => {
-  state.touchStartX = e.changedTouches[0].clientX;
-}, { passive: true });
+      // prepare fade-in
+      quoteInner.classList.remove('fade-out');
+      quoteInner.classList.add('fade-in');
 
-document.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - state.touchStartX;
-  if (Math.abs(dx) < CONFIG.swipeThreshold) return;
-  dx < 0 ? goNext() : goPrev();
-}, { passive: true });
+      // trigger reflow so transition fires
+      void quoteInner.offsetWidth;
 
-/* ────────────────────────────────────────────────
-   BAŞLATMA
-──────────────────────────────────────────────── */
-function init() {
-  updateCountdown();
-  state.timers.countdown = setInterval(updateCountdown, 1000);
-  loadMessages();
-}
+      quoteInner.classList.remove('fade-in');
+    }, 220);
+  }
 
-init();
+  function advance(direction) {
+    resetTimer();
+
+    if (direction === 1) {
+      cursor++;
+      if (cursor >= shuffled.length) {
+        // new cycle — avoid same author at seam
+        const prevLastName = pool[shuffled[shuffled.length - 1]].name;
+        shuffled = buildShuffled(prevLastName);
+        cursor   = 0;
+      }
+    } else {
+      cursor--;
+      if (cursor < 0) cursor = shuffled.length - 1;
+    }
+
+    showMessage(shuffled[cursor]);
+    startTimer();
+  }
+
+  function startTimer() {
+    autoTimer = setTimeout(() => advance(1), AUTO_DELAY);
+  }
+
+  function resetTimer() {
+    clearTimeout(autoTimer);
+    autoTimer = null;
+  }
+
+  /* ---- Initialise with data ---- */
+  function init(data) {
+    // Build flat message pool
+    data.forEach(person => {
+      if (!Array.isArray(person.messages)) return;
+      person.messages.forEach(msg => {
+        pool.push({ text: msg.text, name: person.name });
+      });
+    });
+
+    if (pool.length === 0) {
+      quoteEmpty.hidden = false;
+      quoteInner.hidden = true;
+      return;
+    }
+
+    shuffled = buildShuffled(null);
+
+    // Random starting position
+    cursor = Math.floor(Math.random() * shuffled.length);
+
+    showMessage(shuffled[cursor]);
+    startTimer();
+  }
+
+  /* ---- Button events ---- */
+  btnPrev.addEventListener('click', () => advance(-1));
+  btnNext.addEventListener('click', () => advance(1));
+
+  /* ---- Keyboard ---- */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown')  { e.preventDefault(); advance(1);  }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')    { e.preventDefault(); advance(-1); }
+  });
+
+  /* ---- Touch / swipe ---- */
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  quoteCard.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].clientX;
+    touchStartY = e.changedTouches[0].clientY;
+  }, { passive: true });
+
+  quoteCard.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      advance(dx < 0 ? 1 : -1);
+    }
+  }, { passive: true });
+
+  /* ---- Load data ---- */
+  fetch('quotes.json')
+    .then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    })
+    .then(data => init(data))
+    .catch(err => {
+      console.error('quotes.json yüklenemedi:', err);
+      quoteText.textContent  = '';
+      quoteAuthor.textContent = '';
+      quoteError.hidden = false;
+    });
+})();

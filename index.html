@@ -3,135 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Tekamüle Geçiş İmtihanı — Motivasyon ve geri sayım uygulaması." />
-  <title>Tekamüle Geçiş İmtihanı</title>
+  <meta name="description" content="İmtihana hazırlanan talebeler için motivasyon uygulaması" />
+  <title>30 Haziran'a Kalan Süre</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
   <main class="container" role="main">
 
-    <!-- ═══════════════════════════════════════
-         BAŞLIK
-         ─ Subtitle'ı etkinleştirmek için
-           aşağıdaki yorum bloğunu açın.
-    ════════════════════════════════════════ -->
-    <header class="site-header">
-      <h1 class="main-title">Tekamüle Geçiş İmtihanı</h1>
-
-      <!--
-      <p class="subtitle">
-        Bu yolda yalnız değilsin. Seni seven, sana inanan,
-        senin için dua eden insanlar var.
-      </p>
-      -->
+    <!-- Header -->
+    <header class="header">
+      <h1 class="main-title">30 Haziran'a Kalan Süre</h1>
+      <p class="subtitle">Bu yolda yalnız değilsin. Seninle birlikte sayanlar var.</p>
     </header>
 
-    <!-- ═══════════════════════════════════════
-         GERİ SAYIM
-    ════════════════════════════════════════ -->
+    <!-- Countdown -->
     <section class="countdown-section" aria-label="Geri sayım">
       <div class="countdown" id="countdown">
-        <div class="countdown-unit">
-          <span class="countdown-value" id="days">--</span>
-          <span class="countdown-label">Gün</span>
+        <div class="time-unit">
+          <span class="time-value" id="days">--</span>
+          <span class="time-label">Gün</span>
         </div>
-        <div class="countdown-separator" aria-hidden="true">:</div>
-        <div class="countdown-unit">
-          <span class="countdown-value" id="hours">--</span>
-          <span class="countdown-label">Saat</span>
+        <div class="time-separator" aria-hidden="true">:</div>
+        <div class="time-unit">
+          <span class="time-value" id="hours">--</span>
+          <span class="time-label">Saat</span>
         </div>
-        <div class="countdown-separator" aria-hidden="true">:</div>
-        <div class="countdown-unit">
-          <span class="countdown-value" id="minutes">--</span>
-          <span class="countdown-label">Dakika</span>
+        <div class="time-separator" aria-hidden="true">:</div>
+        <div class="time-unit">
+          <span class="time-value" id="minutes">--</span>
+          <span class="time-label">Dakika</span>
         </div>
-        <div class="countdown-separator" aria-hidden="true">:</div>
-        <div class="countdown-unit">
-          <span class="countdown-value" id="seconds">--</span>
-          <span class="countdown-label">Saniye</span>
+        <div class="time-separator" aria-hidden="true">:</div>
+        <div class="time-unit">
+          <span class="time-value" id="seconds">--</span>
+          <span class="time-label">Saniye</span>
         </div>
       </div>
 
-      <!-- Kutlama — süre dolduğunda JS tarafından görünür hale gelir -->
+      <!-- Celebration message (hidden until countdown ends) -->
       <div class="celebration" id="celebration" hidden aria-live="polite">
-        <p class="celebration-text">Tebrikler! Bu güne ulaştın.</p>
-        <p class="celebration-sub">Emeklerin boşa gitmedi. Hayırlı olsun!</p>
+        <p class="celebration-icon" aria-hidden="true">🎉</p>
+        <p class="celebration-text">Tebrikler! Bu zorlu yolculuğu tamamladın.<br>Emeğin ve sabrın meyvesini aldın.</p>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════
-         İLERLEME ÇUBUĞU
-         ─ % etiketini kaldırdık; sadece görsel çubuk kaldı.
-         ─ aria-valuenow JS tarafından güncellenir.
-    ════════════════════════════════════════ -->
-    <section class="progress-section" aria-label="İlerleme göstergesi">
-      <div class="progress-bar-track"
-           role="progressbar"
-           aria-valuemin="0"
-           aria-valuemax="100"
-           aria-valuenow="0"
-           aria-label="Geçen süre">
-        <div class="progress-bar-fill" id="progress-fill"></div>
+    <!-- Quote card -->
+    <section class="quote-section" aria-label="Motivasyon mesajları" aria-live="polite">
+      <div class="quote-card" id="quote-card">
+        <div class="quote-inner" id="quote-inner">
+          <p class="quote-text" id="quote-text">Yükleniyor…</p>
+          <p class="quote-author" id="quote-author"></p>
+        </div>
       </div>
+
+      <!-- Error / empty state -->
+      <p class="quote-error" id="quote-error" hidden role="alert">
+        Mesajlar yüklenemedi. Lütfen sayfayı yenileyin.
+      </p>
+      <p class="quote-empty" id="quote-empty" hidden>
+        Henüz eklenmiş mesaj yok.
+      </p>
     </section>
 
-    <!-- ═══════════════════════════════════════
-         MESAJ KARTI
-    ════════════════════════════════════════ -->
-    <section class="message-section"
-             aria-label="Motivasyon mesajı"
-             aria-live="polite"
-             aria-atomic="true">
-      <div class="message-card" id="message-card">
-
-        <div class="message-loading" id="message-loading">
-          <span>Mesajlar yükleniyor…</span>
-        </div>
-
-        <blockquote class="message-content" id="message-content" hidden>
-          <p class="message-text" id="message-text"></p>
-          <footer class="message-author">
-            <cite id="message-author-name"></cite>
-          </footer>
-        </blockquote>
-
-        <div class="message-error" id="message-error" hidden>
-          <p>Mesajlar yüklenemedi. Lütfen sayfayı yenileyin.</p>
-        </div>
-
-        <div class="message-empty" id="message-empty" hidden>
-          <p>Henüz mesaj eklenmemiş.</p>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════
-         MESAJ NAVİGASYONU
-    ════════════════════════════════════════ -->
-    <nav class="message-nav" aria-label="Mesaj gezinme kontrolleri">
-      <button class="nav-btn" id="btn-prev" aria-label="Önceki mesaj">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-        <span>Önceki</span>
+    <!-- Navigation controls -->
+    <nav class="controls" aria-label="Mesaj gezinme kontrolleri">
+      <button class="btn-nav" id="btn-prev" aria-label="Önceki mesaj" title="Önceki (←)">
+        <span aria-hidden="true">&#8592;</span>
       </button>
-
-      <div class="message-timer" aria-hidden="true">
-        <div class="timer-track">
-          <div class="timer-fill" id="timer-fill"></div>
-        </div>
-      </div>
-
-      <button class="nav-btn" id="btn-next" aria-label="Sonraki mesaj">
-        <span>Sonraki</span>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
+      <span class="message-counter" id="message-counter" aria-live="polite"></span>
+      <button class="btn-nav" id="btn-next" aria-label="Sonraki mesaj" title="Sonraki (→)">
+        <span aria-hidden="true">&#8594;</span>
       </button>
     </nav>
 

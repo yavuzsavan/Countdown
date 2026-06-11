@@ -1,102 +1,52 @@
 [
   {
     "id": 1,
-    "name": "Annen",
+    "name": "Ahmet",
     "messages": [
-      {
-        "id": 101,
-        "text": "Her sabah gözlerini açtığında, senin için dua ediyorum. Bu yolda yalnız değilsin."
-      },
-      {
-        "id": 102,
-        "text": "Sana olan inancım hiç sarsılmadı. Bugün de yarın da yanındayım."
-      },
-      {
-        "id": 103,
-        "text": "Yorulduğunda bil ki, senin yorgunluğun bizim için de onurdur."
-      }
+      { "id": 101, "text": "Bugün gösterdiğin sabır, yarın alacağın neticenin temelidir." },
+      { "id": 102, "text": "Her zorlu soru, seni bir adım daha öne taşır." }
     ]
   },
   {
     "id": 2,
-    "name": "Baban",
+    "name": "Fatma",
     "messages": [
-      {
-        "id": 201,
-        "text": "Güçlü ol. Bu süreci geçen herkes, bir gün bu günlere şükredecek."
-      },
-      {
-        "id": 202,
-        "text": "Emek asla boşa gitmez. Attığın her adım bir yere çıkar."
-      }
+      { "id": 201, "text": "Sana inanan herkes bu yolculuğunda seninle." },
+      { "id": 202, "text": "Emek hiçbir zaman kaybolmaz, mutlaka karşılığını bulur." },
+      { "id": 203, "text": "Yorulduğunda dur, ama asla vazgeçme." }
     ]
   },
   {
     "id": 3,
-    "name": "Hocaefendi",
+    "name": "Mehmet",
     "messages": [
-      {
-        "id": 301,
-        "text": "Sabır en güzel azıktır. Bugünün sabrı yarının meyvesidir."
-      },
-      {
-        "id": 302,
-        "text": "İlim yolunda çekilen her meşakkat, ahirette nur olur."
-      },
-      {
-        "id": 303,
-        "text": "Dua eden bir kalp asla yalnız değildir."
-      },
-      {
-        "id": 304,
-        "text": "Sizi tanıyan herkes bu yolda sizinle birlikte yürüyor."
-      }
+      { "id": 301, "text": "Bu imtihan sadece bir kapı; sen o kapıyı açabilirsin." },
+      { "id": 302, "text": "Çalıştığın her saatte geleceğini inşa ediyorsun." }
     ]
   },
   {
     "id": 4,
-    "name": "Kardeşin",
+    "name": "Zeynep",
     "messages": [
-      {
-        "id": 401,
-        "text": "Sen yaparsın. Her zaman yaptın, bu sefer de yapacaksın."
-      },
-      {
-        "id": 402,
-        "text": "Bittiğinde seninle kutlamak için sabırsızlanıyorum!"
-      }
+      { "id": 401, "text": "Dua edenler var arkanda, yalnız değilsin." },
+      { "id": 402, "text": "Başarı bir tesadüf değil, bugün attığın adımların sonucudur." },
+      { "id": 403, "text": "Zihnin yorulsa da azmin hiç yorulmaz." }
     ]
   },
   {
     "id": 5,
-    "name": "Arkadaşın",
+    "name": "İbrahim",
     "messages": [
-      {
-        "id": 501,
-        "text": "Bu dönem geçecek. Ve geçtiğinde ne kadar güçlendiğini göreceksin."
-      },
-      {
-        "id": 502,
-        "text": "Kendine güven. Hazırlandın, biliyorsun, yapabilirsin."
-      },
-      {
-        "id": 503,
-        "text": "Her zorlu gün seni bir adım daha ileriye taşıyor."
-      }
+      { "id": 501, "text": "Sabah uyandığında sana inanan insanları hatırla." },
+      { "id": 502, "text": "Her tekrar ettiğin bilgi, seni hedefine yaklaştırır." }
     ]
   },
   {
     "id": 6,
-    "name": "Büyükannen",
+    "name": "Emine",
     "messages": [
-      {
-        "id": 601,
-        "text": "Gece gündüz dualarımdasın. Allah kolaylık versin, evladım."
-      },
-      {
-        "id": 602,
-        "text": "Senin başarın hepimizin sevinci olacak."
-      }
+      { "id": 601, "text": "Güçlüsün, bunu her zaman bilmesen de öylesin." },
+      { "id": 602, "text": "Bu süreç geçici, ama kazanacağın başarı kalıcı." }
     ]
   }
 ]

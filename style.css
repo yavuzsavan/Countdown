@@ -1,426 +1,327 @@
-/* ═══════════════════════════════════════════
-   DESIGN TOKENS
-   ───────────────────────────────────────────
-   Renk paleti: sıcak krem zemin üzerine
-   koyu zeytuni/haki tonlar + ısıtılmış amber.
-   Cıvık değil; huzurlu, okunabilir, sade.
-═══════════════════════════════════════════ */
+/* ============================================================
+   TOKENS
+   ============================================================ */
 :root {
-  /* Arkaplan & yüzeyler */
-  --color-bg:         #F7F3EE;   /* sıcak krem */
-  --color-surface:    #FFFFFF;   /* kart zemini */
-  --color-border:     #DDD5C8;   /* açık bej kenarlık */
-  --color-border-focus: #9C8B6E; /* odak / hover kenarlık */
+  --bg:           #0f1117;
+  --surface:      #181c27;
+  --border:       #2a2f42;
+  --accent:       #c9a84c;       /* warm gold — hope, light */
+  --accent-dim:   #a07a2e;
+  --text-primary: #f0ecdf;
+  --text-secondary:#9a9caa;
+  --text-muted:   #5a5d6e;
 
-  /* Vurgu — ısıtılmış amber, fazla parlak değil */
-  --color-accent:     #8B6914;   /* derin amber */
-  --color-accent-dim: #B8902A;   /* orta amber */
-  --color-accent-soft:#F0E4C8;   /* çok açık amber (arka plan nüansı) */
+  --font-display: 'Georgia', 'Times New Roman', serif;
+  --font-body:    system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  /* Metin */
-  --color-text:       #1E1A14;   /* neredeyse siyah, ama soğuk değil */
-  --color-text-mid:   #4A3F30;   /* paragraf / açıklama */
-  --color-text-muted: #8C7C66;   /* ikincil etiketler */
+  --radius-card:  16px;
+  --transition:   0.45s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Durum renkleri */
-  --color-success:    #3A6B3A;
-
-  /* Tipografi */
-  --font-main: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-
-  /* Köşe yarıçapları */
-  --radius-card: 14px;
-  --radius-btn:  9px;
-
-  /* Geçişler */
-  --tr-fast:   150ms ease;
-  --tr-mid:    300ms ease;
-  --tr-slow:   500ms ease;
+  --space-xs:  0.5rem;
+  --space-sm:  1rem;
+  --space-md:  2rem;
+  --space-lg:  3.5rem;
+  --space-xl:  6rem;
 }
 
-/* ═══════════════════════════════════════════
+/* ============================================================
    RESET & BASE
-═══════════════════════════════════════════ */
+   ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
 
 body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-main);
-  font-size: 16px;
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  min-height: 100dvh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-md) var(--space-sm);
   line-height: 1.6;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
 }
 
-/* ═══════════════════════════════════════════
+/* ============================================================
    LAYOUT
-═══════════════════════════════════════════ */
+   ============================================================ */
 .container {
   width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 52px 28px 72px;
+  max-width: 860px;
   display: flex;
   flex-direction: column;
-  gap: 44px;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-md) 0 var(--space-xl);
 }
 
-/* ═══════════════════════════════════════════
-   BAŞLIK
-═══════════════════════════════════════════ */
-.site-header { text-align: center; }
+/* ============================================================
+   HEADER
+   ============================================================ */
+.header {
+  text-align: center;
+}
 
 .main-title {
-  /* clamp(min, preferred, max) — mobil 40px, TV 96px */
-  font-size: clamp(2.5rem, 5.5vw, 6rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 7vw, 6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  line-height: 1.15;
 }
 
+/* Gold underline accent on the title */
 .main-title::after {
   content: '';
   display: block;
-  width: 56px;
+  margin: 0.35em auto 0;
+  width: 3.5rem;
   height: 3px;
-  background: var(--color-accent);
-  margin: 14px auto 0;
+  background: var(--accent);
   border-radius: 2px;
-  opacity: 0.7;
 }
 
-/* Subtitle — HTML'de yorum içinde; aktifleştirilince bu stil çalışır */
 .subtitle {
-  margin-top: 14px;
-  font-size: clamp(1rem, 2vw, 1.2rem);
-  color: var(--color-text-mid);
-  max-width: 540px;
+  margin-top: var(--space-sm);
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: var(--text-secondary);
+  max-width: 480px;
   margin-inline: auto;
-  line-height: 1.75;
 }
 
-/* ═══════════════════════════════════════════
-   GERİ SAYIM
-═══════════════════════════════════════════ */
-.countdown-section { text-align: center; }
+/* ============================================================
+   COUNTDOWN
+   ============================================================ */
+.countdown-section {
+  width: 100%;
+  text-align: center;
+}
 
 .countdown {
   display: flex;
+  align-items: flex-start;
   justify-content: center;
-  align-items: center;
-  gap: 10px;
+  gap: clamp(0.5rem, 2vw, 1.5rem);
   flex-wrap: wrap;
 }
 
-.countdown-unit {
+.time-unit {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  padding: 20px 22px 16px;
-  min-width: 96px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  transition: border-color var(--tr-mid);
+  min-width: clamp(70px, 14vw, 130px);
 }
 
-.countdown-unit:hover { border-color: var(--color-border-focus); }
-
-.countdown-value {
-  font-size: clamp(3rem, 7.5vw, 6rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
+.time-value {
+  font-family: var(--font-display);
+  font-size: clamp(3.2rem, 10vw, 8rem);
+  font-weight: 700;
+  color: var(--accent);
   line-height: 1;
-  color: var(--color-accent);
-  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  /* subtle glow on the numbers */
+  text-shadow: 0 0 40px rgba(201, 168, 76, 0.25);
+  transition: opacity 0.2s ease;
 }
 
-.countdown-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+.time-label {
+  margin-top: 0.4em;
+  font-size: clamp(0.75rem, 2vw, 1rem);
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
-  margin-top: 8px;
+  color: var(--text-muted);
 }
 
-.countdown-separator {
-  font-size: clamp(2rem, 5vw, 4rem);
-  font-weight: 300;
-  color: var(--color-border);
+.time-separator {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 7vw, 5.5rem);
+  color: var(--border);
   line-height: 1;
-  padding-bottom: 22px;
-  align-self: center;
+  padding-top: 0.1em;
   user-select: none;
 }
 
-/* Kutlama */
+/* ============================================================
+   CELEBRATION
+   ============================================================ */
 .celebration {
-  padding: 36px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-accent-dim);
-  border-radius: var(--radius-card);
-  animation: fadeUp var(--tr-slow) ease both;
+  padding: var(--space-md);
+  text-align: center;
+}
+
+.celebration-icon {
+  font-size: clamp(3rem, 8vw, 5rem);
+  line-height: 1;
+  margin-bottom: var(--space-sm);
 }
 
 .celebration-text {
-  font-size: clamp(1.5rem, 4vw, 2.6rem);
-  font-weight: 700;
-  color: var(--color-accent);
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  color: var(--accent);
+  line-height: 1.6;
 }
 
-.celebration-sub {
-  margin-top: 8px;
-  color: var(--color-text-mid);
-}
-
-/* ═══════════════════════════════════════════
-   İLERLEME ÇUBUĞU  (% etiketi yok)
-═══════════════════════════════════════════ */
-.progress-section { /* sadece çubuk */ }
-
-.progress-bar-track {
+/* ============================================================
+   QUOTE CARD
+   ============================================================ */
+.quote-section {
   width: 100%;
-  height: 5px;
-  background: var(--color-border);
-  border-radius: 99px;
-  overflow: hidden;
 }
 
-.progress-bar-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-dim));
-  border-radius: 99px;
-  transition: width 1s ease;
-}
-
-/* ═══════════════════════════════════════════
-   MESAJ KARTI
-   ─ Geri sayımla dengeli bir boyut hiyerarşisi.
-   ─ Mesaj metni ekranın en az 1/3'ünü doldurur.
-═══════════════════════════════════════════ */
-.message-section { position: relative; }
-
-.message-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+.quote-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius-card);
-  padding: clamp(32px, 5vw, 60px) clamp(28px, 5vw, 64px);
-  min-height: 260px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 6vw, 4rem);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  /* Soft left-side accent bar */
 }
 
-/* Hafif zemin nüansı — accent soft */
-.message-card::before {
+.quote-card::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse 60% 50% at 50% 0%,
-    var(--color-accent-soft) 0%,
-    transparent 70%
-  );
-  opacity: 0.4;
+  left: 0; top: 2rem; bottom: 2rem;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+  opacity: 0.6;
+}
+
+/* Quotation mark watermark */
+.quote-card::after {
+  content: '\201C';
+  position: absolute;
+  top: -0.25rem;
+  left: 1.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 15vw, 12rem);
+  color: var(--border);
+  line-height: 1;
+  user-select: none;
   pointer-events: none;
 }
 
-.message-content {
-  text-align: center;
-  max-width: 680px;
-  margin: 0 auto;
-  position: relative; /* üstteki ::before'dan yukarıda kalır */
-}
-
-/* Büyük tırnak — tipografik süs, dikkat çalmaz */
-.message-content::before {
-  content: '\201C';
-  display: block;
-  font-size: clamp(3.5rem, 9vw, 7rem);
-  line-height: 0.55;
-  color: var(--color-accent);
-  opacity: 0.25;
-  margin-bottom: 12px;
-  font-family: Georgia, 'Times New Roman', serif;
-}
-
-.message-text {
-  /* Büyütüldü: sayacın ~60–70% boyutunda */
-  font-size: clamp(1.35rem, 3vw, 2rem);
-  font-weight: 400;
-  line-height: 1.85;
-  color: var(--color-text);
-  margin-bottom: 28px;
-}
-
-.message-author { font-style: normal; }
-
-.message-author cite {
-  font-size: clamp(0.9rem, 1.8vw, 1.1rem);
-  font-weight: 600;
-  color: var(--color-accent);
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  font-style: normal;
-}
-
-.message-author cite::before {
-  content: '— ';
-  opacity: 0.55;
-  font-weight: 400;
-}
-
-/* Durum mesajları */
-.message-loading,
-.message-error,
-.message-empty {
-  text-align: center;
-  color: var(--color-text-muted);
-  font-size: 1rem;
-}
-
-/* Geçiş animasyonu */
-.message-content {
+.quote-inner {
+  position: relative;
+  z-index: 1;
+  /* fade transition */
   opacity: 1;
   transform: translateY(0);
-  transition: opacity var(--tr-mid), transform var(--tr-mid);
+  transition: opacity var(--transition), transform var(--transition);
 }
 
-.message-card.fade-out .message-content {
+.quote-inner.fade-out {
   opacity: 0;
   transform: translateY(8px);
 }
 
-.message-card.fade-in .message-content {
-  opacity: 1;
-  transform: translateY(0);
+.quote-inner.fade-in {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 
-/* ═══════════════════════════════════════════
-   MESAJ NAVİGASYONU
-═══════════════════════════════════════════ */
-.message-nav {
+.quote-text {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 3.5vw, 2rem);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.7;
+  /* Keep long quotes readable */
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.quote-author {
+  margin-top: 1.5em;
+  font-size: clamp(0.9rem, 2vw, 1.15rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+.quote-author::before {
+  content: '— ';
+}
+
+/* Error / empty states */
+.quote-error,
+.quote-empty {
+  text-align: center;
+  padding: var(--space-md);
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* ============================================================
+   NAVIGATION CONTROLS
+   ============================================================ */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.btn-nav {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  width: clamp(44px, 8vw, 56px);
+  height: clamp(44px, 8vw, 56px);
+  border-radius: 50%;
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  flex-shrink: 0;
 }
 
-.nav-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-mid);
-  font-family: var(--font-main);
-  font-size: 0.88rem;
-  font-weight: 500;
-  padding: 10px 18px;
-  border-radius: var(--radius-btn);
-  cursor: pointer;
-  transition: background var(--tr-fast), color var(--tr-fast), border-color var(--tr-fast);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+.btn-nav:hover {
+  background: var(--border);
+  border-color: var(--accent-dim);
+  transform: scale(1.06);
 }
 
-.nav-btn:hover {
-  background: var(--color-accent-soft);
-  color: var(--color-text);
-  border-color: var(--color-border-focus);
-}
-
-.nav-btn:focus-visible {
-  outline: 2px solid var(--color-accent);
+.btn-nav:focus-visible {
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 
-.nav-btn:active { transform: scale(0.97); }
+.btn-nav:active { transform: scale(0.96); }
 
-/* Otomatik geçiş zamanlayıcı çubuğu */
-.message-timer { flex: 1; max-width: 160px; }
-
-.timer-track {
-  height: 3px;
-  background: var(--color-border);
-  border-radius: 99px;
-  overflow: hidden;
+.message-counter {
+  min-width: 5ch;
+  text-align: center;
+  font-size: clamp(0.8rem, 1.8vw, 1rem);
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  user-select: none;
 }
 
-.timer-fill {
-  height: 100%;
-  width: 100%;
-  background: var(--color-accent-dim);
-  border-radius: 99px;
-  transform-origin: left;
-  animation: timerShrink 20s linear forwards;
-}
-
-/* ═══════════════════════════════════════════
-   KEYFRAMES
-═══════════════════════════════════════════ */
-@keyframes timerShrink {
-  from { transform: scaleX(1); }
-  to   { transform: scaleX(0); }
-}
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ═══════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════ */
-
-/* Küçük telefon */
-@media (max-width: 480px) {
-  .container       { padding: 28px 14px 48px; gap: 32px; }
-  .countdown       { gap: 6px; }
-  .countdown-unit  { min-width: 68px; padding: 12px 10px; }
-  .countdown-separator { padding-bottom: 16px; }
-  .message-card    { padding: 24px 18px; min-height: 220px; }
-  .nav-btn span    { display: none; }
-  .nav-btn         { padding: 11px; }
-  .message-timer   { max-width: 72px; }
-}
-
-/* Tablet */
-@media (min-width: 481px) and (max-width: 768px) {
-  .countdown-unit { min-width: 80px; }
-}
-
-/* Büyük ekran & TV */
+/* ============================================================
+   RESPONSIVE — LARGE SCREENS / TV
+   ============================================================ */
 @media (min-width: 1400px) {
-  .container {
-    max-width: 1140px;
-    padding: 80px 56px 100px;
-    gap: 60px;
-  }
-  .countdown-unit {
-    min-width: 148px;
-    padding: 28px 36px 20px;
-  }
-  .message-card {
-    min-height: 320px;
-    padding: 64px 80px;
-  }
+  .container { max-width: 1100px; }
 }
 
-/* Hareketi azalt */
+@media (min-width: 2000px) {
+  :root { font-size: 20px; }
+  .container { max-width: 1400px; }
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-  .timer-fill { animation: none; }
+  .quote-inner { transition: opacity 0.15s ease; }
+  .btn-nav { transition: none; }
 }
