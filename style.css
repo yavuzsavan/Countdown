@@ -2,14 +2,14 @@
    TOKENS
    ============================================================ */
 :root {
---bg:            #071420;
---surface:       #0D2030;
---border:        #1A3A50;
---accent:        #2EB8C8;
---accent-dim:    #1A8A98;
---text-primary:  #E8F4F8;
---text-secondary:#7AAABB;
---text-muted:    #3A6070;
+--bg:            #060E0E;
+--surface:       #0C1C1C;
+--border:        #163030;
+--accent:        #2EC4B6;
+--accent-dim:    #1A8A80;
+--text-primary:  #E0F4F2;
+--text-secondary:#6AB8B0;
+--text-muted:    #2E6860;
 
   --font-display: 'Georgia', 'Times New Roman', serif;
   --font-body:    system-ui, -apple-system, 'Segoe UI', sans-serif;
