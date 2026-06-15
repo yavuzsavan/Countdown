@@ -1,52 +1,109 @@
 [
   {
     "id": 1,
-    "name": "Ahmet",
+    "name": "Hz. Üstazımız",
     "messages": [
-      { "id": 101, "text": "Bugün gösterdiğin sabır, yarın alacağın neticenin temelidir." },
-      { "id": 102, "text": "Her zorlu soru, seni bir adım daha öne taşır." }
+
     ]
   },
   {
     "id": 2,
-    "name": "Fatma",
+    "name": "Kemal Kacar Beyabimiz",
     "messages": [
-      { "id": 201, "text": "Sana inanan herkes bu yolculuğunda seninle." },
-      { "id": 202, "text": "Emek hiçbir zaman kaybolmaz, mutlaka karşılığını bulur." },
-      { "id": 203, "text": "Yorulduğunda dur, ama asla vazgeçme." }
+
     ]
   },
   {
     "id": 3,
-    "name": "Mehmet",
+    "name": "Ahmet Arif Denizolgun Beyabimiz",
     "messages": [
-      { "id": 301, "text": "Bu imtihan sadece bir kapı; sen o kapıyı açabilirsin." },
-      { "id": 302, "text": "Çalıştığın her saatte geleceğini inşa ediyorsun." }
-    ]
+    {
+      "id": 301,
+      "text": "İman sahibi olmak bir nasip işi olduğu gibi, itaat de bir nasip işidir. Bu yola hizmet etmek, yardım etmek hep nasip işidir."
+    },
+    {
+      "id": 302,
+      "text": "Davamıza giren her fert hoca olur, ihvan olur, ırk, renk ve bölge ayrımı gözetmeksizin hizmete sevgi ve saygıyla, dört elle sarılır."
+    },
+    {
+      "id": 303,
+      "text": "Benim bildiğim bir şey var ki Cenabı Hak bu topluluğu, bu cemaati mağdur etmez. Bak sekiz yıllık eğitim çıktı, talebe inkıtaya uğradı mı, hayır, artarak devam etti. Sekiz yıl değil yirmi sekiz yıl kesintisiz olsa biz yine zarar görmeyeceğiz. Benim bildiğim bu."
+    },
+    {
+      "id": 304,
+      "text": "İman sahibi olmak bir nasip işi olduğu gibi, itaat de bir nasip işidir. Bu yola hizmet etmek, yardım etmek hep nasip işidir."
+    },
+    {
+      "id": 305,
+      "text": "Davamıza giren her fert hoca olur, ihvan olur, ırk, renk ve bölge ayrımı gözetmeksizin hizmete sevgi ve saygıyla, dört elle sarılır."
+    },
+    {
+      "id": 306,
+      "text": "Himmet tek taraflı olmaz. Bizler gayret edeceğiz. Hz. Üstazımızın himmeti ve teveccühü devam edecek."
+    },
+    {
+      "id": 307,
+      "text": "Hizmet kişinin ufkunu genişletir. Talebe ihvan hizmet ettikçe koştukça bunlarla elde edilen tecrübelerle hizmetleri daha iyi anlar. Ufku genişler, gelişir, ta arş-ı alaya kadar."
+    },
+    {
+      "id": 308,
+      "text": "En şerefli şey hizmet etmektir. Maddi olarak her şey bu hizmetler için çok rahat ve kolay bir şekilde terk edilir."
+    },
+    {
+      "id": 309,
+      "text": "Bu aile büyük bir aile. Bu ailenin içerisinde bulunabilmek ve bulunduğu nispet de hizmet etmek, bu şekilde de devam edebilmek nasip işidir."
+    },
+    {
+      "id": 310,
+      "text": "Bu aileye dâhil olmak kâfi değildir. Herkes o keyfiyeti temin edebilmek için çok gayret göstermelidir."
+    },
+    {
+      "id": 311,
+      "text": "Biz elimiz kolumuz ile değil bütün bedenimiz ile dalmamız lazım."
+    },
+    {
+      "id": 312,
+      "text": "Hizmetin büyüğü küçüğü olmaz. Hizmet bir safhada bitmiyor. Talebenin talebeliği bitince hizmeti bitmiyor. İhvanlığın çeşitli safhaları vardır. Bunlar hep birbirinin mütemmimidir. Bunu söylerken gayretinizin azalması için değil, tahdîsi nimet için söylüyorum. Cenâbı Hak yardımını insanların eli vasıtasıyla, gayretimize göre vermektedir."
+    },
+    {
+      "id": 313,
+       "text": "Talebelerimizin okudukları alet dersleri her ne kadar alet dersi olsa da, en az âli dersler kadar ehemmiyet arz etmektedirler. Zira o derslerde fark edilmiyor da olsa, günlük hayata dair güzel ölçüler mevcuttur. Nasıl ki havada mevcut oksijeni fark edemiyor, göremiyoruz fakat o bizim maddi hayatiyetimizin devamı için elzemse, alet derslerinin satırları ardındaki hayat ölçülerini görmesek de onlar bizim manevi hayatiyetimizin devamı için elzemdir."
+    },
+   {
+    "id": 314,
+    "text": "Bana bazen soruyorlar, acaba biz dâhili derslere gereken ehemmiyeti göstermiyor muyuz? Diye bunu düşünmek bile doğru değil. Böyle bir şey yok. Bu nefsin bir anlık vesvesesidir. Böyle bir soru hayal bile edilemez. Bizim bu toplantı için toplanmamız onlara bir cevaptır. Dâhili programlar olmasa diğer programların hiçbir kıymeti yoktur. Bizim asli vazifemiz budur."
   },
+  {
+    "id": 315,
+    "text": "Bilin ki Rabıta-i Şerifenin en yüksek olduğu zaman dersteki geçen zamandır. Bunu fark etsek de etmesek de bu böyledir."
+  },
+  {
+    "id": 316,
+    "text": "Hassasiyetimize dikkat etmemiz lazım. Yapmış olmak için değil. En güzel ve daha güzel şekilde ders okutmak lazım."
+  },
+  {
+    "id": 317,
+    "text": "Bir insan akademisyen olsa, profesör olsa, bilgin olsa yine de aslı ve kökü bu derslerdir."
+  },
+  {
+    "id": 318,
+    "text": "Bir binanın dışı mükemmel olabilir, hatta altın kaplama olabilir, ama içinde elektrik, su ve ısıtma sistemi yoksa bu binada yaşamak mümkün değildir. Bizim dâhili programlarımız bu binanın elektriğidir, hatta çok yüksek voltajda bir elektriktir. Bunu ayarlayan trafolarımız var. Okul dersleri de binanın dışını oluşturur, dâhili derslerimiz binanın içini oluşturur, asıl önemli olan da budur, bunu unutmamak lazım."
+  },
+  {
+    "id": 319,
+    "text": "Çok gayret edeceğiz. Ancak hizmetteki muvaffakiyeti kendimizden bilmeyeceğiz. Bu hizmetler Piranın himmet ve teveccühü ile oluyor. Şahsımıza bir pay çıkarmayalım. Nisbetimiz sağlam. Üstazımız 'sizler İmamı Rabbani evladısınız' buyurmuş. İşte muvaffakiyetin sırrı burada. Bu iltifata layık olmak için çok çalışmak, gayret etmek lazım."
+  },
+  {
+    "id": 320,
+    "text": "Biz sadece bu coğrafyayı düşünmüyoruz. Peygamberimiz nasıl bütün âleme Peygamber olarak gönderildiyse varisi rasül olan Hz. Üstazımız da bütün coğrafyaya mürşid olarak gönderildi. Biz de onun evlatları olarak bütün kıtalardan mesulüz. Şu an beş kıtada hizmetimiz mevcut elhamdülillah."
+  }
+]
+      },
   {
     "id": 4,
-    "name": "Zeynep",
+    "name": "Muhterem Büyüğümüz",
     "messages": [
-      { "id": 401, "text": "Dua edenler var arkanda, yalnız değilsin." },
-      { "id": 402, "text": "Başarı bir tesadüf değil, bugün attığın adımların sonucudur." },
-      { "id": 403, "text": "Zihnin yorulsa da azmin hiç yorulmaz." }
-    ]
-  },
-  {
-    "id": 5,
-    "name": "İbrahim",
-    "messages": [
-      { "id": 501, "text": "Sabah uyandığında sana inanan insanları hatırla." },
-      { "id": 502, "text": "Her tekrar ettiğin bilgi, seni hedefine yaklaştırır." }
-    ]
-  },
-  {
-    "id": 6,
-    "name": "Emine",
-    "messages": [
-      { "id": 601, "text": "Güçlüsün, bunu her zaman bilmesen de öylesin." },
-      { "id": 602, "text": "Bu süreç geçici, ama kazanacağın başarı kalıcı." }
+
     ]
   }
 ]
