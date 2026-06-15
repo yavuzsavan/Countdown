@@ -10,17 +10,6 @@
 --text-primary:  #E8F4F8;
 --text-secondary:#7AAABB;
 --text-muted:    #3A6070;
-  
-  --color-bg:           #0B1E2D;
-  --color-surface:      #122534;
-  --color-border:       #1E3A4A;
-  --color-border-focus: #2E6A7A;
-  --color-accent:       #2EB8C8;
-  --color-accent-dim:   #4ED4E0;
-  --color-accent-soft:  #0E2F3D;
-  --color-text:         #E8F4F8;
-  --color-text-mid:     #A8C8D4;
-  --color-text-muted:   #5A8A9A;
 
   --font-display: 'Georgia', 'Times New Roman', serif;
   --font-body:    system-ui, -apple-system, 'Segoe UI', sans-serif;
